@@ -171,6 +171,7 @@ public:
 
     // Static method to set user-defined names for connected Lucid cameras
     static bool setUserDefinedNames(const QStringList &names, QString &errorMessage, QStringList &progressMessages);
+    static bool setUserDefinedNamesBySerial(const QHash<QString, QString> &serialToPosition, QString &errorMessage, QStringList &progressMessages);
 #endif
 
 public slots:

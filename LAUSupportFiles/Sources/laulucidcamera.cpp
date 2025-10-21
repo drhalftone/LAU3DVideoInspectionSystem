@@ -2258,4 +2258,167 @@ bool LAULucidCamera::setUserDefinedNames(const QStringList &names, QString &erro
 
     return true;
 }
+
+/****************************************************************************/
+/****************************************************************************/
+/****************************************************************************/
+bool LAULucidCamera::setUserDefinedNamesBySerial(const QHash<QString, QString> &serialToPosition, QString &errorMessage, QStringList &progressMessages)
+{
+    progressMessages.clear();
+    errorMessage.clear();
+
+    if (serialToPosition.isEmpty()) {
+        errorMessage = "No serial number to position mappings provided";
+        return false;
+    }
+
+    // Open the Arena SDK system
+    acSystem hSystem = NULL;
+    AC_ERROR err = acOpenSystem(&hSystem);
+    if (err != AC_ERR_SUCCESS || hSystem == NULL) {
+        errorMessage = QString("Failed to open Lucid system: %1").arg(errorMessages(err));
+        return false;
+    }
+
+    progressMessages.append("Lucid system opened successfully");
+
+    // Update device list
+    progressMessages.append("Scanning for Lucid cameras...");
+    err = acSystemUpdateDevices(hSystem, SYSTEM_TIMEOUT);
+    if (err != AC_ERR_SUCCESS) {
+        errorMessage = QString("Failed to update device list: %1").arg(errorMessages(err));
+        acCloseSystem(hSystem);
+        return false;
+    }
+
+    // Get number of devices
+    size_t numDevices = 0;
+    err = acSystemGetNumDevices(hSystem, &numDevices);
+    if (err != AC_ERR_SUCCESS) {
+        errorMessage = QString("Failed to get device count: %1").arg(errorMessages(err));
+        acCloseSystem(hSystem);
+        return false;
+    }
+
+    progressMessages.append(QString("Found %1 device(s) total").arg(numDevices));
+
+    // Build map of device index to serial number for valid Lucid cameras
+    QHash<size_t, QString> deviceIndexToSerial;
+    for (size_t i = 0; i < numDevices; i++) {
+        // Create device temporarily to check serial number
+        acDevice hDevice = NULL;
+        err = acSystemCreateDevice(hSystem, i, &hDevice);
+        if (err != AC_ERR_SUCCESS) {
+            progressMessages.append(QString("  Warning: Could not open device %1 for validation").arg(i));
+            continue;
+        }
+
+        // Get device node map
+        acNodeMap hNodeMap = NULL;
+        err = acDeviceGetNodeMap(hDevice, &hNodeMap);
+        if (err != AC_ERR_SUCCESS) {
+            acSystemDestroyDevice(hSystem, hDevice);
+            progressMessages.append(QString("  Warning: Could not get node map for device %1").arg(i));
+            continue;
+        }
+
+        // Get serial number
+        char serialBuf[LUCIDMAXBUF];
+        size_t serialBufLen = LUCIDMAXBUF;
+        err = acNodeMapGetStringValue(hNodeMap, "DeviceSerialNumber", serialBuf, &serialBufLen);
+        QString serialNumber = (err == AC_ERR_SUCCESS) ? QString(serialBuf) : QString("");
+
+        // Validate serial number format - Lucid cameras have 9-digit numeric serial numbers
+        bool isValidLucid = false;
+        if (serialNumber.length() == 9) {
+            bool allDigits = true;
+            for (int j = 0; j < serialNumber.length(); j++) {
+                if (!serialNumber.at(j).isDigit()) {
+                    allDigits = false;
+                    break;
+                }
+            }
+            isValidLucid = allDigits;
+        }
+
+        if (isValidLucid) {
+            deviceIndexToSerial[i] = serialNumber;
+            progressMessages.append(QString("  Device %1: Valid Lucid camera (S/N: %2)").arg(i).arg(serialNumber));
+        } else {
+            progressMessages.append(QString("  Device %1: Skipping non-Lucid device (S/N: %2)").arg(i).arg(serialNumber));
+        }
+
+        // Clean up temporary device
+        acSystemDestroyDevice(hSystem, hDevice);
+    }
+
+    int numLucidCameras = deviceIndexToSerial.count();
+    progressMessages.append(QString("Found %1 valid Lucid camera(s)").arg(numLucidCameras));
+
+    if (numLucidCameras == 0) {
+        errorMessage = "No Lucid cameras detected";
+        acCloseSystem(hSystem);
+        return false;
+    }
+
+    // Program each Lucid camera based on serial number match
+    int programmedCount = 0;
+    QHashIterator<size_t, QString> it(deviceIndexToSerial);
+    while (it.hasNext()) {
+        it.next();
+        size_t deviceIndex = it.key();
+        QString serialNumber = it.value();
+
+        // Check if this serial number has a position mapping
+        if (!serialToPosition.contains(serialNumber)) {
+            progressMessages.append(QString("  Skipping camera S/N %1 (no position mapping in config)").arg(serialNumber));
+            continue;
+        }
+
+        QString position = serialToPosition[serialNumber];
+        progressMessages.append(QString("Processing camera S/N %1 (device index %2) -> '%3'...").arg(serialNumber).arg(deviceIndex).arg(position));
+
+        // Create device
+        acDevice hDevice = NULL;
+        err = acSystemCreateDevice(hSystem, deviceIndex, &hDevice);
+        if (err != AC_ERR_SUCCESS) {
+            errorMessage = QString("Failed to create device %1: %2").arg(deviceIndex).arg(errorMessages(err));
+            acCloseSystem(hSystem);
+            return false;
+        }
+
+        // Get device node map
+        acNodeMap hNodeMap = NULL;
+        err = acDeviceGetNodeMap(hDevice, &hNodeMap);
+        if (err != AC_ERR_SUCCESS) {
+            errorMessage = QString("Failed to get node map for device %1: %2").arg(deviceIndex).arg(errorMessages(err));
+            acSystemDestroyDevice(hSystem, hDevice);
+            acCloseSystem(hSystem);
+            return false;
+        }
+
+        // Set the user-defined name
+        progressMessages.append(QString("  Setting camera S/N %1 to '%2'...").arg(serialNumber).arg(position));
+
+        err = acNodeMapSetStringValue(hNodeMap, "DeviceUserID", position.toLatin1().constData());
+        if (err != AC_ERR_SUCCESS) {
+            errorMessage = QString("Failed to set user-defined name for camera S/N %1: %2").arg(serialNumber).arg(errorMessages(err));
+            acSystemDestroyDevice(hSystem, hDevice);
+            acCloseSystem(hSystem);
+            return false;
+        }
+
+        progressMessages.append(QString("  ✓ Camera S/N %1 successfully set to '%2'").arg(serialNumber).arg(position));
+        programmedCount++;
+
+        // Clean up device
+        acSystemDestroyDevice(hSystem, hDevice);
+    }
+
+    // Close system
+    acCloseSystem(hSystem);
+    progressMessages.append(QString("Successfully configured %1 camera(s)!").arg(programmedCount));
+
+    return true;
+}
 #endif
