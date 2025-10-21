@@ -1,0 +1,11 @@
+# PLACEHOLDER FILE: SVM Detector Data
+#
+# This is a companion data file for svmObjectDetector.xml
+#
+# ORIGINAL PURPOSE: Binary data or parameters for SVM object detector (36 bytes)
+#
+# END USER ACTION REQUIRED:
+# - Replace with your own detector data file
+# - Ensure format matches what your SVM implementation expects
+# - Consider renaming to reflect your object type
+# - Update file references if renaming

@@ -1,0 +1,53 @@
+<!--
+===============================================================================
+BUTTON 1 CONFIGURATION - Customize this file for your application
+===============================================================================
+
+METADATA SECTION:
+- BUTTON_LABEL: Text displayed on the button (use \n for line breaks)
+- TITLE: Main heading for the help panel
+
+PLACEHOLDERS (automatically replaced at runtime):
+- {{STATUS_COLOR}}: "green" or "red" based on button1_test.ps1 result
+- {{STATUS_ICON}}: "✓" (green) or "✗" (red)
+- {{STATUS_TEXT}}: Dynamic status message
+
+HOW TO CUSTOMIZE:
+1. Update BUTTON_LABEL to change button text (keep it short, 2-3 words per line)
+2. Update TITLE and content below to describe your button's purpose
+3. Modify button1_test.ps1 to define when this button is GREEN vs RED
+4. Modify button1_action.ps1 to define what happens when clicked
+
+EXAMPLE USE CASES:
+- "Configure System" - Setup application settings
+- "Initialize Database" - Check/create database connection
+- "Load Configuration" - Load config files
+===============================================================================
+-->
+<!--METADATA
+BUTTON_LABEL: 1. System\nConfiguration
+TITLE: SYSTEM CONFIGURATION
+-->
+<h2>SYSTEM CONFIGURATION</h2>
+<hr>
+
+<!-- Customize the content below for your application -->
+
+<p>This button configures your system settings.</p>
+
+<p><b>STATUS:</b> <span style='color:{{STATUS_COLOR}}; font-size:16px;'>{{STATUS_ICON}}</span> {{STATUS_TEXT}}</p>
+
+<p><b>WHY THIS IS NEEDED:</b><br>
+Initial configuration is required before other operations can proceed.
+This sets up paths, identifiers, and operational parameters.</p>
+
+<p><b>WHAT HAPPENS WHEN YOU CLICK:</b><br>
+Launches the configuration tool or dialog to set up system parameters.</p>
+
+<p><b>PREREQUISITES:</b><br>
+None - this is typically the first setup step.</p>
+
+<p><b>CONFIGURATION:</b><br>
+• Edit <code>button1_test.ps1</code> to define when button is GREEN (ready)<br>
+• Edit <code>button1_action.ps1</code> to define the button's action<br>
+• Edit this file to customize help text and descriptions</p>

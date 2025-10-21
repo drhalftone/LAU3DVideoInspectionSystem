@@ -1,0 +1,44 @@
+<!-- PLACEHOLDER FILE: Object Region Classifier
+================================================================================
+This file is a placeholder for an OpenCV Haar Cascade classifier.
+
+ORIGINAL PURPOSE (Object Detection):
+  - Detects specific regions of interest in video frames
+  - Used for object feature analysis
+  - Can be trained for various object types
+  - Original dimensions: 48x24 pixels, 7 stages, HAAR features
+
+END USER ACTION REQUIRED:
+  - Replace this file with your own trained Haar Cascade classifier XML
+  - Train classifier on features relevant to your target objects
+  - Ensure XML follows OpenCV cascade classifier format
+  - Update references in code if renaming this file
+
+TRAINING YOUR OWN CLASSIFIER:
+  - Use opencv_traincascade tool with positive/negative samples
+  - See OpenCV documentation: https://docs.opencv.org/
+  - Consider using modern alternatives (YOLO, SSD, etc.) for better accuracy
+
+RELATED FILES:
+  - laucascadeclassifierglfilter.cpp/h (GPU-accelerated classifier)
+  - laucascadeclassifierfromlivevideo.cpp/h (Live video classifier)
+================================================================================
+-->
+<opencv_storage>
+<!-- Valid but minimal cascade to prevent XML parsing errors -->
+<cascade>
+  <stageType>BOOST</stageType>
+  <featureType>HAAR</featureType>
+  <height>20</height>
+  <width>20</width>
+  <stageParams>
+    <maxWeakCount>1</maxWeakCount>
+  </stageParams>
+  <featureParams>
+    <maxCatCount>0</maxCatCount>
+  </featureParams>
+  <stageNum>0</stageNum>
+  <stages></stages>
+  <features></features>
+</cascade>
+</opencv_storage>

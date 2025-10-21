@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ============================================================================
+    UNATTENDED WINDOWS SETUP - 3D VIDEO INSPECTION SYSTEM
+    ============================================================================
+
+    This answer file automates Windows 10/11 installation and configuration
+    for unattended 3D video inspection systems accessed via Chrome Remote Desktop.
+
+    USAGE:
+    ------
+    Method 1: Fresh Install
+      - Copy this file to the root of a USB drive or ISO
+      - Rename to "autounattend.xml" (exact name required)
+      - Windows Setup will automatically use it
+
+    Method 2: Apply to Existing Installation
+      - Use DISM to apply settings during sysprep/imaging
+      - Or manually apply via Windows Setup during recovery
+
+    BEFORE USING:
+    -------------
+    1. Search and replace the following placeholders:
+       - YOUR_USERNAME       → Windows username (e.g., FarmUser)
+       - YOUR_PASSWORD       → Windows password
+       - YOUR_COMPUTER_NAME  → Computer name (e.g., FarmPC-WKU)
+       - YOUR_PRODUCT_KEY    → Windows 10/11 Pro product key
+       - YOUR_ORGANIZATION   → Organization name (e.g., Lau Consulting Inc)
+
+    2. Customize timezone if needed (default: Pacific Standard Time)
+
+    3. Test on a non-production system first!
+
+    WHAT THIS DOES:
+    ---------------
+    - Skips OOBE (Out-of-Box Experience) screens
+    - Automatically accepts EULA
+    - Creates local user account
+    - Enables auto-login for that user
+    - Disables privacy telemetry screens
+    - Disables lock screen
+    - Configures network for private (allows remote desktop)
+    - Sets timezone
+    - Disables unnecessary features
+
+    SECURITY WARNING:
+    -----------------
+    This file contains plaintext passwords. Protect it appropriately.
+    Only use on dedicated 3D video inspection systems in secure locations.
+
+    Author: Lau Consulting Inc
+    Website: drhalftone.com
+    ============================================================================
+-->
+
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+
+    <!-- ====================================================================
+         WINDOWS PE (Pre-Installation Environment)
+         ==================================================================== -->
+    <settings pass="windowsPE">
+        <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <!-- Locale and Keyboard Settings -->
+            <SetupUILanguage>
+                <UILanguage>en-US</UILanguage>
+            </SetupUILanguage>
+            <InputLocale>en-US</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>en-US</UserLocale>
+        </component>
+
+        <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <!-- Product Key (REPLACE YOUR_PRODUCT_KEY) -->
+            <UserData>
+                <AcceptEula>true</AcceptEula>
+                <FullName>YOUR_ORGANIZATION</FullName>
+                <Organization>YOUR_ORGANIZATION</Organization>
+                <ProductKey>
+                    <!-- For Windows 10/11 Pro Generic Key (for testing): VK7JG-NPHTM-C97JM-9MPGT-3V66T -->
+                    <!-- Replace with your actual product key -->
+                    <Key>YOUR_PRODUCT_KEY</Key>
+                    <WillShowUI>OnError</WillShowUI>
+                </ProductKey>
+            </UserData>
+
+            <!-- Disk Configuration (WARNING: This will erase the disk!) -->
+            <!-- Comment out this section if you're applying to existing installation -->
+            <!--
+            <DiskConfiguration>
+                <Disk wcm:action="add">
+                    <DiskID>0</DiskID>
+                    <WillWipeDisk>true</WillWipeDisk>
+                    <CreatePartitions>
+                        <CreatePartition wcm:action="add">
+                            <Order>1</Order>
+                            <Type>Primary</Type>
+                            <Extend>true</Extend>
+                        </CreatePartition>
+                    </CreatePartitions>
+                    <ModifyPartitions>
+                        <ModifyPartition wcm:action="add">
+                            <Order>1</Order>
+                            <PartitionID>1</PartitionID>
+                            <Letter>C</Letter>
+                            <Label>Windows</Label>
+                            <Format>NTFS</Format>
+                        </ModifyPartition>
+                    </ModifyPartitions>
+                </Disk>
+            </DiskConfiguration>
+            <ImageInstall>
+                <OSImage>
+                    <InstallTo>
+                        <DiskID>0</DiskID>
+                        <PartitionID>1</PartitionID>
+                    </InstallTo>
+                </OSImage>
+            </ImageInstall>
+            -->
+        </component>
+    </settings>
+
+    <!-- ====================================================================
+         SPECIALIZE (Pre-OOBE System Configuration)
+         ==================================================================== -->
+    <settings pass="specialize">
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <!-- Computer Name (REPLACE YOUR_COMPUTER_NAME) -->
+            <ComputerName>YOUR_COMPUTER_NAME</ComputerName>
+
+            <!-- Timezone (Pacific Standard Time - change if needed) -->
+            <!-- Use: tzutil /l to list available timezones -->
+            <TimeZone>Pacific Standard Time</TimeZone>
+
+            <!-- Registered Owner/Organization -->
+            <RegisteredOwner>YOUR_ORGANIZATION</RegisteredOwner>
+            <RegisteredOrganization>YOUR_ORGANIZATION</RegisteredOrganization>
+        </component>
+
+        <!-- Disable Windows Defender (Optional - can interfere with recording) -->
+        <component name="Security-Malware-Windows-Defender" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <DisableAntiSpyware>false</DisableAntiSpyware>
+            <!-- Set to true only if you have alternative antivirus -->
+        </component>
+    </settings>
+
+    <!-- ====================================================================
+         OOBE SYSTEM (Out-of-Box Experience - SKIP ALL SCREENS)
+         ==================================================================== -->
+    <settings pass="oobeSystem">
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+            <!-- OOBE Configuration - SKIP EVERYTHING -->
+            <OOBE>
+                <HideEULAPage>true</HideEULAPage>
+                <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+                <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+                <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+                <HideLocalAccountScreen>true</HideLocalAccountScreen>
+                <ProtectYourPC>3</ProtectYourPC> <!-- 1=Recommended, 2=Express, 3=Customize/Disable -->
+                <SkipUserOOBE>true</SkipUserOOBE>
+                <SkipMachineOOBE>true</SkipMachineOOBE>
+            </OOBE>
+
+            <!-- Create Local User Account (REPLACE YOUR_USERNAME and YOUR_PASSWORD) -->
+            <UserAccounts>
+                <LocalAccounts>
+                    <LocalAccount wcm:action="add">
+                        <Password>
+                            <Value>YOUR_PASSWORD</Value>
+                            <PlainText>true</PlainText>
+                        </Password>
+                        <Description>3D Video Inspection System User</Description>
+                        <DisplayName>YOUR_USERNAME</DisplayName>
+                        <Group>Administrators</Group>
+                        <Name>YOUR_USERNAME</Name>
+                    </LocalAccount>
+                </LocalAccounts>
+            </UserAccounts>
+
+            <!-- Auto-Login Configuration (REPLACE YOUR_USERNAME and YOUR_PASSWORD) -->
+            <AutoLogon>
+                <Password>
+                    <Value>YOUR_PASSWORD</Value>
+                    <PlainText>true</PlainText>
+                </Password>
+                <Enabled>true</Enabled>
+                <Username>YOUR_USERNAME</Username>
+                <LogonCount>999999</LogonCount> <!-- Effectively unlimited -->
+            </AutoLogon>
+
+            <!-- First Logon Commands - Run after first boot -->
+            <FirstLogonCommands>
+
+                <!-- Disable Lock Screen -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>1</Order>
+                    <CommandLine>reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization" /v NoLockScreen /t REG_DWORD /d 1 /f</CommandLine>
+                    <Description>Disable Lock Screen</Description>
+                </SynchronousCommand>
+
+                <!-- Disable First Logon Animation -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>2</Order>
+                    <CommandLine>reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableFirstLogonAnimation /t REG_DWORD /d 0 /f</CommandLine>
+                    <Description>Disable First Logon Animation</Description>
+                </SynchronousCommand>
+
+                <!-- Disable Privacy Experience (Post-Update Screens) -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>3</Order>
+                    <CommandLine>reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v DisablePrivacyExperience /t REG_DWORD /d 1 /f</CommandLine>
+                    <Description>Disable Privacy Experience</Description>
+                </SynchronousCommand>
+
+                <!-- Set Network to Private (Allows Remote Desktop) -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>4</Order>
+                    <CommandLine>powershell.exe -Command "Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private"</CommandLine>
+                    <Description>Set Network Profile to Private</Description>
+                </SynchronousCommand>
+
+                <!-- Disable Windows Update Auto-Restart During Active Hours -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>5</Order>
+                    <CommandLine>reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoRebootWithLoggedOnUsers /t REG_DWORD /d 1 /f</CommandLine>
+                    <Description>Disable Auto-Restart with Logged-On Users</Description>
+                </SynchronousCommand>
+
+                <!-- Set Active Hours (6 AM - 6 PM) -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>6</Order>
+                    <CommandLine>reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v ActiveHoursStart /t REG_DWORD /d 6 /f</CommandLine>
+                    <Description>Set Active Hours Start</Description>
+                </SynchronousCommand>
+
+                <SynchronousCommand wcm:action="add">
+                    <Order>7</Order>
+                    <CommandLine>reg add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v ActiveHoursEnd /t REG_DWORD /d 18 /f</CommandLine>
+                    <Description>Set Active Hours End</Description>
+                </SynchronousCommand>
+
+                <!-- Enable Remote Desktop -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>8</Order>
+                    <CommandLine>reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f</CommandLine>
+                    <Description>Enable Remote Desktop</Description>
+                </SynchronousCommand>
+
+                <!-- Allow Remote Desktop Through Firewall -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>9</Order>
+                    <CommandLine>netsh advfirewall firewall set rule group="remote desktop" new enable=Yes</CommandLine>
+                    <Description>Allow Remote Desktop Through Firewall</Description>
+                </SynchronousCommand>
+
+                <!-- Disable Windows Consumer Features (Suggested Apps) -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>10</Order>
+                    <CommandLine>reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v DisableWindowsConsumerFeatures /t REG_DWORD /d 1 /f</CommandLine>
+                    <Description>Disable Consumer Features</Description>
+                </SynchronousCommand>
+
+                <!-- Disable Cortana -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>11</Order>
+                    <CommandLine>reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v AllowCortana /t REG_DWORD /d 0 /f</CommandLine>
+                    <Description>Disable Cortana</Description>
+                </SynchronousCommand>
+
+                <!-- Set Power Plan to High Performance -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>12</Order>
+                    <CommandLine>powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c</CommandLine>
+                    <Description>Set Power Plan to High Performance</Description>
+                </SynchronousCommand>
+
+                <!-- Disable Sleep and Hibernation -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>13</Order>
+                    <CommandLine>powercfg /change standby-timeout-ac 0</CommandLine>
+                    <Description>Disable Sleep on AC Power</Description>
+                </SynchronousCommand>
+
+                <SynchronousCommand wcm:action="add">
+                    <Order>14</Order>
+                    <CommandLine>powercfg /change hibernate-timeout-ac 0</CommandLine>
+                    <Description>Disable Hibernate on AC Power</Description>
+                </SynchronousCommand>
+
+                <!-- Create Marker File (Indicates Unattend Setup Completed) -->
+                <SynchronousCommand wcm:action="add">
+                    <Order>15</Order>
+                    <CommandLine>cmd /c echo Setup completed %date% %time% > C:\UnattendSetupComplete.txt</CommandLine>
+                    <Description>Create Setup Marker File</Description>
+                </SynchronousCommand>
+
+            </FirstLogonCommands>
+
+        </component>
+
+        <!-- International Settings -->
+        <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <InputLocale>en-US</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>en-US</UserLocale>
+        </component>
+
+    </settings>
+
+</unattend>

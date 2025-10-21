@@ -1,0 +1,63 @@
+<!-- PLACEHOLDER FILE: SVM Object Detector
+================================================================================
+This file is a placeholder for an OpenCV Support Vector Machine (SVM) classifier.
+
+ORIGINAL PURPOSE (Object Detection):
+  - Detects entire objects in video frames using SVM classification
+  - Uses RBF kernel with 320 features (likely HOG or custom descriptor)
+  - Can be trained on various object datasets
+  - Original file size: ~11 MB (large trained model)
+
+END USER ACTION REQUIRED:
+  - Replace this file with your own trained SVM classifier XML
+  - Train on features extracted from your target objects
+  - Ensure XML follows OpenCV SVM storage format
+  - Consider renaming from "svmObjectDetector" to reflect your specific object type
+  - Update references in code and QRC file if renaming
+
+TRAINING YOUR OWN SVM CLASSIFIER:
+  - Extract features from positive samples (HOG, SIFT, SURF, custom features)
+  - Train SVM using OpenCV's cv::ml::SVM class
+  - Save trained model using SVM::save()
+  - Typical file sizes range from KB to MB depending on feature complexity
+
+RELATED FILES:
+  - svmObjectDetector.dat (companion data file - replace with your own)
+  - May be referenced in cascade classifier or detection pipeline code
+
+MODERN ALTERNATIVES:
+  - Deep learning-based detectors (YOLO, SSD, Faster R-CNN)
+  - Modern architectures often outperform traditional SVM approaches
+  - Consider TensorFlow/PyTorch models with OpenCV DNN module
+
+REFERENCE:
+  - OpenCV SVM documentation: https://docs.opencv.org/
+  - OpenCV DNN module for deep learning: https://docs.opencv.org/
+================================================================================
+-->
+<opencv_storage>
+<!-- Valid but minimal SVM structure to prevent XML parsing errors -->
+<my_svm type_id="opencv-ml-svm">
+  <svm_type>NU_SVC</svm_type>
+  <kernel>
+    <type>RBF</type>
+    <gamma>1.</gamma>
+  </kernel>
+  <nu>1.0000000000000001e-01</nu>
+  <term_criteria>
+    <epsilon>9.9999999747524271e-07</epsilon>
+    <iterations>100000</iterations>
+  </term_criteria>
+  <var_all>0</var_all>
+  <var_count>0</var_count>
+  <class_count>0</class_count>
+  <class_labels type_id="opencv-matrix">
+    <rows>0</rows>
+    <cols>0</cols>
+    <dt>i</dt>
+    <data></data>
+  </class_labels>
+  <sv_total>0</sv_total>
+  <support_vectors></support_vectors>
+</my_svm>
+</opencv_storage>

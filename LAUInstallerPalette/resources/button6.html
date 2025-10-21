@@ -1,0 +1,63 @@
+<!--
+===============================================================================
+BUTTON 6 CONFIGURATION - Customize this file for your application
+===============================================================================
+
+METADATA SECTION:
+- BUTTON_LABEL: Text displayed on the button (use \n for line breaks)
+- TITLE: Main heading for the help panel
+
+PLACEHOLDERS (automatically replaced at runtime):
+- {{STATUS_COLOR}}: "green" or "red" based on button6_test.ps1 result
+- {{STATUS_ICON}}: "✓" (green) or "✗" (red)
+- {{STATUS_TEXT}}: Dynamic status message
+- {{WHAT_HAPPENS}}: Context-dependent action description (Button 6 specific)
+
+HOW TO CUSTOMIZE:
+1. Update BUTTON_LABEL to change button text (keep it short, 2-3 words per line)
+2. Update TITLE and content below to describe your button's purpose
+3. Modify button6_test.ps1 to define when this button is GREEN vs RED
+4. Modify button6_action.ps1 to define what happens when clicked
+
+EXAMPLE USE CASES:
+- "Advanced Calibration" - Perform precision calibration
+- "Fine Tune" - Adjust or optimize settings
+- "Quality Check" - Verify system accuracy
+===============================================================================
+-->
+<!--METADATA
+BUTTON_LABEL: 6. Advanced\nCalibration
+TITLE: ADVANCED CALIBRATION
+-->
+<h2>ADVANCED CALIBRATION</h2>
+<hr>
+
+<!-- Customize the content below for your application -->
+
+<p>This button performs advanced calibration or fine-tuning operations.</p>
+
+<p><b>STATUS:</b> <span style='color:{{STATUS_COLOR}}; font-size:16px;'>{{STATUS_ICON}}</span> {{STATUS_TEXT}}</p>
+{{WHAT_HAPPENS}}
+
+<p><b>WHY THIS IS NEEDED:</b><br>
+Advanced calibration improves accuracy and optimizes system performance
+beyond basic setup.</p>
+
+<p><b>WHAT HAPPENS WHEN YOU CLICK:</b><br>
+Launches advanced calibration tools or settings.</p>
+
+<p><b>BUTTON STATES:</b><br>
+• <b style='color:green;'>GREEN:</b> System is calibrated/optimized<br>
+• <b style='color:red;'>RED:</b> Calibration needed or not optimal</p>
+
+<p><b>PREREQUISITES:</b><br>
+• Button 1 GREEN: Configuration complete<br>
+• Button 2 GREEN: Hardware/services active<br>
+• Button 3 GREEN: Devices configured<br>
+• Button 4 GREEN: Baseline captured<br>
+• Button 5: Operations have run to generate calibration data</p>
+
+<p><b>CONFIGURATION:</b><br>
+• Edit <code>button6_test.ps1</code> to check calibration status<br>
+• Edit <code>button6_action.ps1</code> to launch calibration tool<br>
+• Edit this file to customize help text and descriptions</p>

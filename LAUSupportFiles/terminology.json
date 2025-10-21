@@ -1,0 +1,122 @@
+{
+  "_comment": "Terminology Configuration for LAU 3D Video Inspection System",
+  "_description": "This file allows customization of terminology used throughout the application without recompiling. Modify values to adapt the system for different use cases (cattle monitoring, object tracking, quality inspection, etc.)",
+  "_version": "1.0.0",
+
+  "application": {
+    "name": "3D Video Inspection System",
+    "short_name": "Inspection System",
+    "description": "Real-time 3D video capture and object tracking system"
+  },
+
+  "system": {
+    "singular": "System",
+    "plural": "Systems",
+    "code_label": "System Code",
+    "code_placeholder": "e.g., WKU",
+    "code_description": "Three-letter identifier for this installation",
+    "identification_group": "System Identification",
+    "configuration": "System Configuration",
+    "setup": "System Setup"
+  },
+
+  "object": {
+    "singular": "Object",
+    "plural": "Objects",
+    "id_label": "Object ID",
+    "id_short": "ID",
+    "id_list_filename": "objectIDList.csv",
+    "hash_table": "Object Hash Table",
+    "detector": "Object Detector",
+    "classifier": "Object Region Classifier",
+    "tracking": "Object Tracking",
+    "detection": "Object Detection"
+  },
+
+  "recording": {
+    "singular": "Recording",
+    "plural": "Recordings",
+    "video_label": "Video Recording",
+    "3d_video_label": "3D Video Recording",
+    "log_filename": "videoRecording.txt",
+    "task_prefix": "LAU3DVideoRecording-",
+    "tools_directory": "3DVideoInspectionTools",
+    "schedule_group": "Recording Schedule",
+    "start_time_label": "Start Time",
+    "duration_label": "Duration",
+    "enable_encoding": "Enable Encoding",
+    "monitoring": "Monitoring for objects"
+  },
+
+  "calibration": {
+    "singular": "Calibration",
+    "plural": "Calibrations",
+    "manager": "Calibration Manager",
+    "jetr_editor": "JETR Editor",
+    "jetr_description": "Just-Enough-To-Reconstruct vectors for 3D reconstruction",
+    "lookup_table_prefix": "system",
+    "lookup_table_extension": ".lutx",
+    "history_management": "History Management"
+  },
+
+  "camera": {
+    "singular": "Camera",
+    "plural": "Cameras",
+    "label": "Label Cameras",
+    "position_labeler": "Camera Position Labeler",
+    "selection": "Camera Selection",
+    "configuration": "Camera Configuration",
+    "multi_sensor": "Multi-Sensor"
+  },
+
+  "storage": {
+    "destination_path": "Destination Path",
+    "destination_description": "Network/external drive location for permanent storage",
+    "local_temp_path": "Local Temp Path",
+    "local_temp_description": "Local SSD location for temporary recording files",
+    "advanced_settings": "Advanced Settings"
+  },
+
+  "processing": {
+    "application_name": "Process Videos",
+    "background_capture": "Background Capture",
+    "monitor_live": "Monitor Live Video",
+    "encode_filter": "Encode Object ID Filter"
+  },
+
+  "ui_buttons": {
+    "system_config": "System\nConfiguration",
+    "ontrak": "OnTrak\nRecording",
+    "label_cameras": "Label\nCameras",
+    "background": "Background\nCapture",
+    "monitor_live": "Monitor\nLive Video",
+    "calibrate": "Calibrate\nCameras",
+    "process_videos": "Process\nVideos"
+  },
+
+  "status_messages": {
+    "monitoring_active": "Monitoring for objects...",
+    "no_object_detected": "No object detected",
+    "object_detected": "Object detected",
+    "recording_started": "Recording started",
+    "recording_stopped": "Recording stopped",
+    "calibration_complete": "Calibration complete",
+    "processing_complete": "Processing complete"
+  },
+
+  "file_patterns": {
+    "lookup_table_pattern": "system###.lutx",
+    "config_file": "systemConfig.ini",
+    "object_id_list": "objectIDList.csv"
+  },
+
+  "legacy_mappings": {
+    "_comment": "Mappings from old terminology for backwards compatibility",
+    "farm": "system",
+    "farmCode": "systemCode",
+    "cow": "object",
+    "cowID": "objectID",
+    "cattle": "object",
+    "dairy": "inspection"
+  }
+}

@@ -1,0 +1,46 @@
+<!--METADATA
+TITLE: LAU OnTrak Widget
+VERSION: 1.0
+-->
+<h3>LAU OnTrak Widget</h3>
+<p><b>Version 1.0</b></p>
+<p>A professional control interface for OnTrak USB relay devices used in equipment automation.</p>
+
+<h4>Key Features:</h4>
+<ul>
+<li><b>Relay Control:</b> Manual toggle control for relays K0 and K1</li>
+<li><b>Safety Protection:</b> Daily cycle limit (3 cycles/day) to prevent equipment damage</li>
+<li><b>Remote Control:</b> IPC server enables control from external applications</li>
+<li><b>Visual Feedback:</b> Color-coded status indicators for relay states</li>
+<li><b>Demo Mode:</b> Full functionality simulation when no device is connected</li>
+</ul>
+
+<h4>Remote Control via IPC:</h4>
+<p>External applications can connect to this widget using inter-process communication:</p>
+<ul>
+<li><b>CYCLE_RELAYS</b> - Automated relay cycling for equipment operation</li>
+<li><b>STATUS</b> - Query current operational state</li>
+<li><b>GET_LIMIT</b> - Check remaining daily cycles</li>
+</ul>
+
+<h4>Safety & Reset Information:</h4>
+<p><b>Why Daily Limits Exist:</b> Equipment protection against excessive mechanical stress from relay cycling.</p>
+<p><b>When Remote Reset is Needed:</b></p>
+<ul>
+<li>After equipment maintenance or calibration</li>
+<li>When authorized for extended testing procedures</li>
+<li>During emergency operational requirements</li>
+<li>When the daily limit was reached due to automated system operations</li>
+</ul>
+
+<h4>Status Colors:</h4>
+<ul>
+<li><font color='#C44040'><b>Red:</b></font> Relay OFF</li>
+<li><font color='#40C440'><b>Green:</b></font> Relay ON</li>
+<li><font color='#4040C4'><b>Blue:</b></font> Processing/waiting state</li>
+<li><font color='#C4C440'><b>Yellow:</b></font> Demo mode (no device connected)</li>
+</ul>
+
+<hr>
+<p><b>Lau Consulting Inc</b><br>
+Copyright © 2025 | <a href="https://drhalftone.com">drhalftone.com</a></p>

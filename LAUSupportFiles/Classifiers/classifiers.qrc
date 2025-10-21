@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/CLASSIFIERS">
+        <file>objectRegionClassifier.xml</file>
+        <file>svmObjectDetector.xml</file>
+        <file>cascade.xml</file>
+    </qresource>
+</RCC>

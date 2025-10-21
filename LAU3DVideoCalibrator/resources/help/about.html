@@ -1,0 +1,39 @@
+<!--METADATA
+TITLE: JETR Calibration Manager
+VERSION: 1.0.0
+-->
+<h2>JETR Calibration Manager</h2>
+<p><b>Version:</b> 1.0.0</p>
+<p>A Qt-based application for viewing, editing, and managing JETR
+(Just-Enough-To-Reconstruct) vectors used in 3D reconstruction from RGB-D
+camera data, with specialized support for historical 3D video analysis.</p>
+
+<h3>Key Features:</h3>
+<ul>
+<li><b>History Management:</b> Load and manage camera configuration changes over time</li>
+<li><b>Visual Progress:</b> Track calibration completion with date-based checkboxes</li>
+<li><b>Multi-Camera Support:</b> Handle stacked camera configurations with individual calibration</li>
+<li><b>Smart Storage:</b> Automatic persistence of calibration work between sessions</li>
+<li><b>Incremental Workflow:</b> Work on a few dates at a time with saved progress</li>
+<li><b>Python Integration:</b> Generate history files with embedded script support</li>
+</ul>
+
+<h3>JETR Vectors:</h3>
+<p>37-element arrays containing minimal parameters for 3D reconstruction:</p>
+<ul>
+<li><b>Intrinsic Parameters (0-11):</b> Camera calibration and distortion</li>
+<li><b>Extrinsic Parameters (12-27):</b> Camera pose in world coordinates</li>
+<li><b>Bounding Box (28-33):</b> 3D region of interest</li>
+<li><b>Depth Processing (34-36):</b> Scale factors and depth limits</li>
+</ul>
+
+<h3>Architecture:</h3>
+<p><b>Main Window:</b> History file management, date navigation, progress tracking</p>
+<p><b>JETR Editor:</b> Visual camera identification, parameter editing, inventory management</p>
+
+<hr>
+<p><i>Part of the LAU3DVideoRecorder project for 3D video inspection systems.</i></p>
+<p><a href='https://github.com/drhalftone/LAU3DVideoRecorder'>GitHub Repository</a></p>
+<hr>
+<p><b>Lau Consulting Inc</b><br>
+Copyright © 2025 | <a href="https://drhalftone.com">drhalftone.com</a></p>

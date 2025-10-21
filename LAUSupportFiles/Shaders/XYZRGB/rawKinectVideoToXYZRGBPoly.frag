@@ -1,0 +1,55 @@
+#version 330 core
+
+uniform sampler2D qt_mappingTexture; // THIS TEXTURE HOLDS THE DEPTH TO COLOR MAPPING
+uniform sampler2D qt_colorTexture;   // THIS TEXTURE HOLDS THE XYZ+TEXTURE COORDINATES
+uniform sampler2D qt_depthTexture;   // THIS TEXTURE HOLDS THE INCOMING DEPTH VIDEO FRAME
+uniform sampler2D qt_spherTexture;   // THIS TEXTURE HOLDS THE SPHERICAL TO CARTESION FACTORS
+uniform      vec2 qt_depthLimits;    // THIS HOLDS THE RANGE LIMITS OF THE LOOK UP TABLE
+
+layout(location = 0, index = 0) out vec4 qt_fragColor;
+
+void main()
+{
+    // MAP THE FRAGMENT COORDINATES TO TEXTURE COORDINATES
+    ivec2 textureCoordinate = ivec2(gl_FragCoord.x/2, gl_FragCoord.y);
+
+    // GET THE PIXEL COORDINATE OF THE CURRENT FRAGMENT
+    if (int(gl_FragCoord.x)%2 == 0){
+        // CONVERT THE COLUMN COORDINATE TO PACKED COORDINATES
+        int col = textureCoordinate.x/4;
+        int chn = textureCoordinate.x%4;
+
+        // USE THE FOLLOWING COMMAND TO GET Z FROM THE DEPTH BUFFER
+        float phase = texelFetch(qt_depthTexture, ivec2(col, textureCoordinate.y), 0)[chn]; // * 7084.50 - 40.0;
+
+        // USE THE FOLLOWING COMMAND TO GET FOUR FLOATS FROM THE TEXTURE BUFFER
+        vec4 vecABCD = texelFetch(qt_spherTexture, ivec2(3*textureCoordinate.x + 0, textureCoordinate.y), 0);
+        vec4 vecEFGH = texelFetch(qt_spherTexture, ivec2(3*textureCoordinate.x + 1, textureCoordinate.y), 0);
+        vec4 vecIJKL = texelFetch(qt_spherTexture, ivec2(3*textureCoordinate.x + 2, textureCoordinate.y), 0);
+
+        // DERIVE THE XYZ COORDINATES FROM THE PHASE VALUE
+        qt_fragColor.b  = vecEFGH.x * phase * phase * phase * phase;
+        qt_fragColor.b += vecEFGH.y * phase * phase * phase;
+        qt_fragColor.b += vecEFGH.z * phase * phase;
+        qt_fragColor.b += vecEFGH.w * phase;
+        qt_fragColor.b += vecIJKL.x;
+
+        qt_fragColor.g = (vecABCD.z * qt_fragColor.b + vecABCD.w);
+        qt_fragColor.r = (vecABCD.x * qt_fragColor.b + vecABCD.y);
+
+        // DERIVE CUMMULATIVE FLAG TERM
+        qt_fragColor.a = float(qt_fragColor.b > qt_depthLimits.x) * float(qt_fragColor.b < qt_depthLimits.y);
+
+        // SET UNRESOLVED PIXELS TO NAN
+        qt_fragColor.rgb = (qt_fragColor.rgb * qt_fragColor.a) / qt_fragColor.a;
+    } else {
+        // GRAB COLOR IMAGE COORDINATES FROM DEPTH IMAGE COORDINATES
+        vec2 pos = texelFetch(qt_mappingTexture, textureCoordinate, 0).xy;
+
+        // NORMALIZE THE PIXEL COORDINATES
+        pos = (pos+0.5)/textureSize(qt_colorTexture, 0);
+
+        // READ THE FRAGMENT COLOR FROM THE COLOR IMAGE TEXTURE
+        qt_fragColor = texture(qt_colorTexture, pos.xy, 0);
+    }
+}

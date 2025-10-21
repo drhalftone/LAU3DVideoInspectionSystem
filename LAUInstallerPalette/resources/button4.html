@@ -1,0 +1,55 @@
+<!--
+===============================================================================
+BUTTON 4 CONFIGURATION - Customize this file for your application
+===============================================================================
+
+METADATA SECTION:
+- BUTTON_LABEL: Text displayed on the button (use \n for line breaks)
+- TITLE: Main heading for the help panel
+
+PLACEHOLDERS (automatically replaced at runtime):
+- {{STATUS_COLOR}}: "green" or "red" based on button4_test.ps1 result
+- {{STATUS_ICON}}: "✓" (green) or "✗" (red)
+- {{STATUS_TEXT}}: Dynamic status message
+
+HOW TO CUSTOMIZE:
+1. Update BUTTON_LABEL to change button text (keep it short, 2-3 words per line)
+2. Update TITLE and content below to describe your button's purpose
+3. Modify button4_test.ps1 to define when this button is GREEN vs RED
+4. Modify button4_action.ps1 to define what happens when clicked
+
+EXAMPLE USE CASES:
+- "Capture Baseline" - Record reference data
+- "Initialize Sensors" - Perform sensor calibration
+- "Set Zero Point" - Establish reference position
+===============================================================================
+-->
+<!--METADATA
+BUTTON_LABEL: 4. Capture\nBaseline
+TITLE: CAPTURE BASELINE
+-->
+<h2>CAPTURE BASELINE</h2>
+<hr>
+
+<!-- Customize the content below for your application -->
+
+<p>This button captures baseline or reference data used for comparison operations.</p>
+
+<p><b>STATUS:</b> <span style='color:{{STATUS_COLOR}}; font-size:16px;'>{{STATUS_ICON}}</span> {{STATUS_TEXT}}</p>
+
+<p><b>WHY THIS IS NEEDED:</b><br>
+Baseline data provides a reference for detecting changes, anomalies,
+or objects in subsequent operations.</p>
+
+<p><b>WHAT HAPPENS WHEN YOU CLICK:</b><br>
+Launches a tool to capture and save reference data.</p>
+
+<p><b>PREREQUISITES:</b><br>
+• Button 1 GREEN: Configuration complete<br>
+• Button 2 GREEN: Hardware/services active<br>
+• Button 3 GREEN: Devices configured</p>
+
+<p><b>CONFIGURATION:</b><br>
+• Edit <code>button4_test.ps1</code> to check if baseline data exists<br>
+• Edit <code>button4_action.ps1</code> to launch capture tool<br>
+• Edit this file to customize help text and descriptions</p>

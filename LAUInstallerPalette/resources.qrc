@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/help">
+        <file>resources/button1.html</file>
+        <file>resources/button2.html</file>
+        <file>resources/button3.html</file>
+        <file>resources/button4.html</file>
+        <file>resources/button5.html</file>
+        <file>resources/button6.html</file>
+        <file>resources/about.html</file>
+    </qresource>
+    <qresource prefix="/scripts">
+        <file>resources/button1_test.ps1</file>
+        <file>resources/button2_test.ps1</file>
+        <file>resources/button3_test.ps1</file>
+        <file>resources/button4_test.ps1</file>
+        <file>resources/button5_test.ps1</file>
+        <file>resources/button6_test.ps1</file>
+        <file>resources/button1_action.ps1</file>
+        <file>resources/button2_action.ps1</file>
+        <file>resources/button3_action.ps1</file>
+        <file>resources/button4_action.ps1</file>
+        <file>resources/button5_action.ps1</file>
+        <file>resources/button6_action.ps1</file>
+    </qresource>
+</RCC>

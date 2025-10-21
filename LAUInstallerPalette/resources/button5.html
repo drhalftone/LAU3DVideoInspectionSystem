@@ -1,0 +1,58 @@
+<!--
+===============================================================================
+BUTTON 5 CONFIGURATION - Customize this file for your application
+===============================================================================
+
+METADATA SECTION:
+- BUTTON_LABEL: Text displayed on the button (use \n for line breaks)
+- TITLE: Main heading for the help panel
+
+PLACEHOLDERS (automatically replaced at runtime):
+- {{STATUS_COLOR}}: "green" or "red" based on button5_test.ps1 result
+- {{STATUS_ICON}}: "✓" (green) or "✗" (red)
+- {{STATUS_TEXT}}: Dynamic status message
+
+HOW TO CUSTOMIZE:
+1. Update BUTTON_LABEL to change button text (keep it short, 2-3 words per line)
+2. Update TITLE and content below to describe your button's purpose
+3. Modify button5_test.ps1 to define when this button is GREEN vs RED
+4. Modify button5_action.ps1 to define what happens when clicked
+
+EXAMPLE USE CASES:
+- "Start Monitoring" - Begin automated monitoring/recording
+- "Run Process" - Start continuous data processing
+- "Begin Operations" - Start the main operational workflow
+===============================================================================
+-->
+<!--METADATA
+BUTTON_LABEL: 5. Start\nOperations
+TITLE: START OPERATIONS
+-->
+<h2>START OPERATIONS</h2>
+<hr>
+
+<!-- Customize the content below for your application -->
+
+<p>This button starts the main operational process or monitoring system.</p>
+
+<p><b>STATUS:</b> <span style='color:{{STATUS_COLOR}}; font-size:16px;'>{{STATUS_ICON}}</span> {{STATUS_TEXT}}</p>
+
+<p><b>WHY THIS IS NEEDED:</b><br>
+This is typically the main operation that performs continuous monitoring,
+data collection, or automated processing.</p>
+
+<p><b>WHAT HAPPENS WHEN YOU CLICK:</b><br>
+Starts the main operational process or provides instructions for automated startup.</p>
+
+<p><b>PREREQUISITES:</b><br>
+• Button 1 GREEN: Configuration complete<br>
+• Button 2 GREEN: Hardware/services active<br>
+• Button 3 GREEN: Devices configured<br>
+• Button 4 GREEN: Baseline captured</p>
+
+<p><b>NOTE:</b> Advanced calibration (Button 6) may not be required to begin operations.</p>
+
+<p><b>CONFIGURATION:</b><br>
+• Edit <code>button5_test.ps1</code> to check if operations are running<br>
+• Edit <code>button5_action.ps1</code> to start/configure operations<br>
+• Edit this file to customize help text and descriptions</p>

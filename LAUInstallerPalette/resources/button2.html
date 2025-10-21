@@ -1,0 +1,57 @@
+<!--
+===============================================================================
+BUTTON 2 CONFIGURATION - Customize this file for your application
+===============================================================================
+
+METADATA SECTION:
+- BUTTON_LABEL: Text displayed on the button (use \n for line breaks)
+- TITLE: Main heading for the help panel
+
+PLACEHOLDERS (automatically replaced at runtime):
+- {{STATUS_COLOR}}: "green" or "red" based on button2_test.ps1 result
+- {{STATUS_ICON}}: "✓" (green) or "✗" (red)
+- {{STATUS_TEXT}}: Dynamic status message
+- {{WARMUP_STATUS}}: Optional warmup timer status (Button 2 specific)
+- {{RELAY_WARNING}}: Optional hardware warnings (Button 2 specific)
+
+HOW TO CUSTOMIZE:
+1. Update BUTTON_LABEL to change button text (keep it short, 2-3 words per line)
+2. Update TITLE and content below to describe your button's purpose
+3. Modify button2_test.ps1 to define when this button is GREEN vs RED
+4. Modify button2_action.ps1 to define what happens when clicked
+
+EXAMPLE USE CASES:
+- "Start Service" - Launch a background service or daemon
+- "Connect Hardware" - Verify hardware connection
+- "Enable Power" - Control power to external devices
+===============================================================================
+-->
+<!--METADATA
+BUTTON_LABEL: 2. Power\nControl
+TITLE: POWER CONTROL
+-->
+<h2>POWER CONTROL</h2>
+<hr>
+
+<!-- Customize the content below for your application -->
+
+<p>This button controls external hardware or services.</p>
+
+<p><b>STATUS:</b> <span style='color:{{STATUS_COLOR}}; font-size:16px;'>{{STATUS_ICON}}</span> {{STATUS_TEXT}}</p>
+{{WARMUP_STATUS}}
+{{RELAY_WARNING}}
+
+<p><b>WHY THIS IS NEEDED:</b><br>
+External devices, services, or processes must be running before
+the system can operate properly.</p>
+
+<p><b>WHAT HAPPENS WHEN YOU CLICK:</b><br>
+Launches the control application or toggles the power state of external devices.</p>
+
+<p><b>PREREQUISITES:</b><br>
+• Button 1 GREEN: Configuration must be complete</p>
+
+<p><b>CONFIGURATION:</b><br>
+• Edit <code>button2_test.ps1</code> to check if service/hardware is active<br>
+• Edit <code>button2_action.ps1</code> to start/stop the service<br>
+• Edit this file to customize help text and descriptions</p>

@@ -1,0 +1,34 @@
+<!--METADATA
+TITLE: LAURemoteToolsInareaer - system Recording Setup
+VERSION: 1.0
+-->
+<h2>LAURemoteToolsInareaer - system Recording Setup</h2>
+<p><b>Version 1.0</b><br>
+<small>{{COMPILE_DATE}}</small></p>
+<p>A configuration tool for automated inspection system video recording systems.</p>
+<hr>
+<h3>What This Tool Does:</h3>
+<ul>
+<li>Configures daily recording schedules for system monitoring</li>
+<li>Sets up cloud storage paths for video archives</li>
+<li>Manages RFID object ID encoding integration</li>
+<li>Configures LAUOnTrakWidget for automatic startup (relay control)</li>
+<li>Creates Windows Task Scheduler entries for automation</li>
+</ul>
+<h3>Recording Workflow:</h3>
+<ol>
+<li><b>Startup:</b> LAUOnTrakWidget launches on login for camera power cycling</li>
+<li><b>Record:</b> LAU3DVideoRecorder captures video at scheduled time</li>
+<li><b>Encode:</b> LAUEncodeobjectIDFilter extracts RFID tags and embeds object IDs</li>
+<li><b>Upload:</b> Videos are copied to cloud storage (OneDrive/SharePoint)</li>
+<li><b>Cleanup:</b> Local temporary files are removed</li>
+</ol>
+<h3>Hardware Setup:</h3>
+<p>Power Supply → OnTrak USB Relay → PoE Injector → Cameras<br>
+LAUOnTrakWidget provides hardware-level power cycling when cameras freeze.</p>
+<h3>Configuration File:</h3>
+<p>Settings are saved to <code>systemConfig.ini</code> in the application directory.<br>
+The generic <code>recordVideo.cmd</code> batch script reads this file to execute the workflow.</p>
+<hr>
+<p><b>Lau Consulting Inc</b><br>
+Copyright © 2025 | <a href="https://drhalftone.com">drhalftone.com</a></p>

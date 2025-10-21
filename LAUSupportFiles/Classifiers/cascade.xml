@@ -1,0 +1,52 @@
+<!-- PLACEHOLDER FILE: Generic Cascade Classifier
+================================================================================
+This file is a placeholder for an OpenCV Haar Cascade classifier.
+
+ORIGINAL PURPOSE (Object Detection):
+  - Detects specific object features in video frames
+  - Used in conjunction with other classifiers for multi-stage detection
+  - Can be trained on various object datasets
+  - Original dimensions: 36x18 pixels, 6 stages, LBP features
+
+END USER ACTION REQUIRED:
+  - Replace this file with your own trained Haar Cascade classifier XML
+  - Train classifier on features relevant to your target objects
+  - Ensure XML follows OpenCV cascade classifier format
+  - This generic filename suggests it may be a primary/general purpose classifier
+  - Update references in code if renaming this file
+
+TRAINING YOUR OWN CLASSIFIER:
+  - Use opencv_traincascade tool with positive/negative samples
+  - Collect hundreds or thousands of sample images
+  - Label positive samples (objects to detect)
+  - Provide negative samples (backgrounds without objects)
+  - See OpenCV documentation: https://docs.opencv.org/
+
+MODERN ALTERNATIVES:
+  - Consider YOLO (You Only Look Once) for real-time object detection
+  - Consider SSD (Single Shot Detector) for accuracy/speed balance
+  - Consider modern CNN-based detectors for better performance
+
+RELATED FILES:
+  - laucascadeclassifierglfilter.cpp/h (GPU-accelerated classifier)
+  - laucascadeclassifierfromlivevideo.cpp/h (Live video classifier)
+================================================================================
+-->
+<opencv_storage>
+<!-- Valid but minimal cascade to prevent XML parsing errors -->
+<cascade>
+  <stageType>BOOST</stageType>
+  <featureType>HAAR</featureType>
+  <height>20</height>
+  <width>20</width>
+  <stageParams>
+    <maxWeakCount>1</maxWeakCount>
+  </stageParams>
+  <featureParams>
+    <maxCatCount>0</maxCatCount>
+  </featureParams>
+  <stageNum>0</stageNum>
+  <stages></stages>
+  <features></features>
+</cascade>
+</opencv_storage>

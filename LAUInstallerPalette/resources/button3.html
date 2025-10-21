@@ -1,0 +1,54 @@
+<!--
+===============================================================================
+BUTTON 3 CONFIGURATION - Customize this file for your application
+===============================================================================
+
+METADATA SECTION:
+- BUTTON_LABEL: Text displayed on the button (use \n for line breaks)
+- TITLE: Main heading for the help panel
+
+PLACEHOLDERS (automatically replaced at runtime):
+- {{STATUS_COLOR}}: "green" or "red" based on button3_test.ps1 result
+- {{STATUS_ICON}}: "✓" (green) or "✗" (red)
+- {{STATUS_TEXT}}: Dynamic status message
+
+HOW TO CUSTOMIZE:
+1. Update BUTTON_LABEL to change button text (keep it short, 2-3 words per line)
+2. Update TITLE and content below to describe your button's purpose
+3. Modify button3_test.ps1 to define when this button is GREEN vs RED
+4. Modify button3_action.ps1 to define what happens when clicked
+
+EXAMPLE USE CASES:
+- "Configure Devices" - Set up hardware device settings
+- "Label Items" - Assign names/IDs to components
+- "Map Sensors" - Define sensor locations or assignments
+===============================================================================
+-->
+<!--METADATA
+BUTTON_LABEL: 3. Configure\nDevices
+TITLE: DEVICE CONFIGURATION
+-->
+<h2>DEVICE CONFIGURATION</h2>
+<hr>
+
+<!-- Customize the content below for your application -->
+
+<p>This button configures devices, sensors, or other hardware components.</p>
+
+<p><b>STATUS:</b> <span style='color:{{STATUS_COLOR}}; font-size:16px;'>{{STATUS_ICON}}</span> {{STATUS_TEXT}}</p>
+
+<p><b>WHY THIS IS NEEDED:</b><br>
+Devices must be identified and configured before they can be used
+in automated operations.</p>
+
+<p><b>WHAT HAPPENS WHEN YOU CLICK:</b><br>
+Launches a tool to configure device settings, assign labels, or map components.</p>
+
+<p><b>PREREQUISITES:</b><br>
+• Button 1 GREEN: Configuration complete<br>
+• Button 2 GREEN: Hardware/services active</p>
+
+<p><b>CONFIGURATION:</b><br>
+• Edit <code>button3_test.ps1</code> to check if devices are configured<br>
+• Edit <code>button3_action.ps1</code> to launch configuration tool<br>
+• Edit this file to customize help text and descriptions</p>
