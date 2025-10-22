@@ -218,9 +218,10 @@ void LAUJETRDialog::setDisplayMode(bool displayMode)
         if (importButton) {
             importButton->setVisible(false);
         }
-        if (resetButton) {
-            resetButton->setVisible(false);
-        }
+        // resetButton removed for standalone build
+        // if (resetButton) {
+        //     resetButton->setVisible(false);
+        // }
 
         // Hide Discard button in display mode (read-only, so only OK to close)
         if (rejectButton) {
@@ -343,11 +344,12 @@ void LAUJETRDialog::setupUI()
     importButton->setToolTip("Load TIFF memory object file");
     buttonBox->addButton(importButton, QDialogButtonBox::ActionRole);
 
-    // Add Reset button (only visible in main editor with memory object)
-    resetButton = new QPushButton("Reset");
-    resetButton->setToolTip("Reload calibration data from original TIFF file");
-    resetButton->setVisible(false); // Initially hidden, shown by updateButtonVisibility() if needed
-    buttonBox->addButton(resetButton, QDialogButtonBox::ActionRole);
+    // Server-only feature removed for standalone build
+    // // Add Reset button (only visible in main editor with memory object)
+    // resetButton = new QPushButton("Reset");
+    // resetButton->setToolTip("Reload calibration data from original TIFF file");
+    // resetButton->setVisible(false); // Initially hidden, shown by updateButtonVisibility() if needed
+    // buttonBox->addButton(resetButton, QDialogButtonBox::ActionRole);
 
     // Add Import button (replaces OK)
     acceptButton = new QPushButton("Import");
@@ -365,7 +367,8 @@ void LAUJETRDialog::setupUI()
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     connect(importButton, &QPushButton::clicked, this, &LAUJETRDialog::onImportClicked);
-    connect(resetButton, &QPushButton::clicked, this, &LAUJETRDialog::onResetClicked);
+    // Server-only feature removed for standalone build
+    // connect(resetButton, &QPushButton::clicked, this, &LAUJETRDialog::onResetClicked);
 
     mainLayout->addWidget(buttonBox);
 }
@@ -391,10 +394,10 @@ void LAUJETRDialog::updateButtonVisibility()
         importButton->setVisible(showLoadButton);
     }
 
-    // Hide Reset button (server-only feature removed)
-    if (resetButton) {
-        resetButton->setVisible(false);
-    }
+    // Server-only feature removed for standalone build
+    // if (resetButton) {
+    //     resetButton->setVisible(false);
+    // }
 
     // Update info label based on whether we loaded a file
     if (infoLabel) {
@@ -430,11 +433,11 @@ void LAUJETRDialog::addJETRTab(const QVector<double> &jetrVector, const QString 
 {
     LAUJETRWidget *widget = new LAUJETRWidget(jetrVector);
 
-    // Set current date if we have a date context
-    if (!dateFolder.isEmpty()) {
-        QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
-        widget->setCurrentDate(folderDate);
-    }
+    // Server-only feature removed for standalone build
+    // if (!dateFolder.isEmpty()) {
+    //     QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
+    //     widget->setCurrentDate(folderDate);
+    // }
 
     // Connect to receive updates
     connect(widget, &LAUJETRWidget::jetrVectorChanged,
@@ -474,11 +477,11 @@ void LAUJETRDialog::addJETRTab(const QVector<double> &jetrVector, const QString 
     widget->setCameraMake(make);
     widget->setCameraModel(model);
 
-    // Set current date if we have a date context
-    if (!dateFolder.isEmpty()) {
-        QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
-        widget->setCurrentDate(folderDate);
-    }
+    // Server-only feature removed for standalone build
+    // if (!dateFolder.isEmpty()) {
+    //     QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
+    //     widget->setCurrentDate(folderDate);
+    // }
 
     // Connect to receive updates
     connect(widget, &LAUJETRWidget::jetrVectorChanged,
@@ -768,34 +771,36 @@ void LAUJETRDialog::onExportCSVClicked()
 /****************************************************************************/
 /****************************************************************************/
 /****************************************************************************/
+// Server-only feature - removed for standalone build
+#if 0
 void LAUJETRDialog::onResetClicked()
 {
     if (!memoryObject.isValid()) {
-        QMessageBox::warning(this, "No Memory Object", 
+        QMessageBox::warning(this, "No Memory Object",
                            "No memory object available for reset operation.");
         return;
     }
-    
+
     // Launch camera selection dialog with existing memory object
     QList<LAUCameraInfo> cameraInfos = LAUJETRWidget::getMultiCameraMakeAndModel(memoryObject, this);
-    
+
     if (cameraInfos.isEmpty()) {
         // User cancelled - keep existing data
         return;
     }
-    
+
     // Update existing tabs with new JETR vectors
     for (int i = 0; i < cameraInfos.size() && i < jetrWidgets.size(); ++i) {
         const LAUCameraInfo &info = cameraInfos[i];
-        
+
         // Get cached JETR vector for this make/model
         LAUCameraCalibration calibration = LAUCameraInventoryDialog::getCameraCalibration(info.make, info.model);
         QVector<double> jetrs;
-        
+
         if (calibration.isValid()) {
             // Start with defaults (identity matrix, ±1000 bounds)
             jetrs = LAUJETRWidget::createDefaultJETR();
-            
+
             // Copy only intrinsic parameters (0-11) and scale/depth params (34-36) from cache
             QVector<double> cachedJetr = calibration.jetrVector;
             if (cachedJetr.size() >= 37) {
@@ -813,22 +818,23 @@ void LAUJETRDialog::onResetClicked()
             // No cached calibration - use complete defaults
             jetrs = LAUJETRWidget::createDefaultJETR();
         }
-        
+
         // Update the existing widget
         jetrWidgets[i]->setJETRVector(jetrs, true); // updateUI = true to refresh display
         jetrWidgets[i]->setCameraMake(info.make);
         jetrWidgets[i]->setCameraModel(info.model);
         jetrWidgets[i]->setCameraRotation(info.rotated);
-        
+
         // Ensure current date is set before setting position (which triggers LUT generation)
         if (!dateFolder.isEmpty()) {
             QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
             jetrWidgets[i]->setCurrentDate(folderDate);
         }
-        
+
         jetrWidgets[i]->setCameraPosition(info.position);  // This triggers LUT generation
     }
 }
+#endif // Server-only feature
 
 /****************************************************************************/
 /****************************************************************************/
@@ -856,6 +862,8 @@ void LAUJETRDialog::onInventoryClicked()
 /****************************************************************************/
 /****************************************************************************/
 /****************************************************************************/
+// Server-only features - removed for standalone build
+#if 0
 void LAUJETRDialog::onGenerateHistoryClicked()
 {
     // Let user select the root directory containing system directories
@@ -1302,6 +1310,7 @@ QString LAUJETRDialog::findSampleTiffFile(const QString &historyFile, const QStr
     
     return QString();
 }
+#endif // Server-only features
 
 /****************************************************************************/
 /****************************************************************************/
@@ -1540,11 +1549,11 @@ void LAUJETRDialog::importLookUpTable(const QString &filename)
     // Set read-only mode for LUT inspection (no memory object available)
     widget->setReadOnly(true);
 
-    // Set current date if we have a date context
-    if (!dateFolder.isEmpty()) {
-        QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
-        widget->setCurrentDate(folderDate);
-    }
+    // Server-only feature removed for standalone build
+    // if (!dateFolder.isEmpty()) {
+    //     QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
+    //     widget->setCurrentDate(folderDate);
+    // }
 
     // Connect to receive updates
     connect(widget, &LAUJETRWidget::jetrVectorChanged,
@@ -1747,17 +1756,19 @@ void LAUJETRDialog::applyBoundingBoxToAllTabs(double xMin, double xMax, double y
 /****************************************************************************/
 /****************************************************************************/
 /****************************************************************************/
+// Server-only feature - removed for standalone build
+#if 0
 void LAUJETRDialog::setDateContext(const QString &folderName)
 {
     dateFolder = folderName;
     setProperty("dateContext", folderName);
-    
+
     // Parse the folder date and set it on all JETR widgets
     QDate folderDate = LAULookUpTable::parseFolderDate(folderName);
-    
-    qDebug() << "LAUJETRDialog: Setting date context to" << folderName 
+
+    qDebug() << "LAUJETRDialog: Setting date context to" << folderName
              << "parsed as" << (folderDate.isValid() ? folderDate.toString("yyyy-MM-dd") : "INVALID");
-    
+
     // Apply the date to all existing JETR widgets
     for (int i = 0; i < tabWidget->count(); ++i) {
         LAUJETRWidget* jetrWidget = qobject_cast<LAUJETRWidget*>(tabWidget->widget(i));
@@ -1766,6 +1777,7 @@ void LAUJETRDialog::setDateContext(const QString &folderName)
         }
     }
 }
+#endif // Server-only feature
 
 /****************************************************************************/
 /****************************************************************************/
