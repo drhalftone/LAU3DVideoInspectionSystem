@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>../LAUSupportFiles/Images/LauIcon.ico</file>
         <file>recordVideo.cmd</file>
     </qresource>
     <qresource prefix="/help">

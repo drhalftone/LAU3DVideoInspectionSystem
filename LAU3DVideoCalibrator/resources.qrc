@@ -1,7 +1,4 @@
 <RCC>
-    <qresource prefix="/scripts">
-        <file>ScriptsForParsingCameraRecordings/lookForChangingCamerasHistory.py</file>
-    </qresource>
     <qresource prefix="/help">
         <file>resources/help/about.html</file>
     </qresource>
