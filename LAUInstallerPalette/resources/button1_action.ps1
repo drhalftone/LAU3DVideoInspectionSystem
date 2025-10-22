@@ -1,16 +1,19 @@
-# Button 1 Action: System Configuration
-# This script is called when Button 1 is clicked
-# Customize this script to perform the action for your button
+# Button 1: System Configuration Action
+# Purpose: Launch the system configuration tool
+# This script is executed when the user clicks Button 1
 
 param(
-    [string]$InstallPath = "C:\LAU3DVideoInspectionTools"
+    [Parameter(Mandatory=$true)]
+    [string]$InstallPath
 )
 
-# Example: Launch system configuration tool
-# Start-Process -FilePath (Join-Path $InstallPath "LAURemoteToolsScheduler.exe")
+$configTool = Join-Path $InstallPath "LAURemoteToolsScheduler.exe"
 
-Write-Host "Button 1 action script executed"
-Write-Host "InstallPath: $InstallPath"
-
-# Return 0 for success, non-zero for failure
-exit 0
+if (Test-Path $configTool) {
+    Write-Host "Launching configuration tool: $configTool"
+    Start-Process $configTool
+    exit 0
+} else {
+    Write-Host "Error: Configuration tool not found at $configTool"
+    exit 1
+}

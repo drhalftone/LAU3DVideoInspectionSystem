@@ -1,14 +1,20 @@
-# Button 1 Status Check: System Configuration
-# Returns: 0 (GREEN) if systemConfig.ini exists, 1 (RED) otherwise
+# Button 1: Farm Configuration Test
+# Purpose: Check if farmConfig.ini exists
+# Exit Code: 0 = Ready (GREEN), 1 = Not Ready (RED)
+# Mimics: LAURemoteToolsPalette::checkButton1Status()
 
 param(
-    [string]$InstallPath = "C:\LAU3DVideoInspectionTools"
+    [Parameter(Mandatory=$true)]
+    [string]$InstallPath
 )
 
+# Check if systemConfig.ini exists
 $configPath = Join-Path $InstallPath "systemConfig.ini"
 
 if (Test-Path $configPath) {
-    exit 0  # GREEN - config file exists
+    Write-Host "✓ System configuration found: $configPath"
+    exit 0  # SUCCESS - Ready (GREEN)
 } else {
-    exit 1  # RED - config file missing
+    Write-Host "✗ System configuration missing: $configPath"
+    exit 1  # FAIL - Not Ready (RED)
 }

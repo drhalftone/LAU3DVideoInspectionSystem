@@ -1,63 +1,45 @@
-# Button 5 Status Check: Monitor Live Video
-# Returns: 0 (GREEN) if recording active or system calibrated, 1 (RED) otherwise
-#
-# Green if:
-# - LAUProcessVideos.exe is running, OR
-# - noCal files exist (recording has happened), OR
-# - System is fully calibrated (background.tif with valid transform AND LUTX files exist)
+# Button 5: System Calibration Test
+# Purpose: Check if system calibration is ready to perform or already complete
+# Exit Code: 0 = Ready (GREEN), 1 = Not Ready (RED)
 
 param(
-    [string]$SharedPath = "C:\Users\Public\Pictures",
-    [string]$TempPath = ""
+    [Parameter(Mandatory=$true)]
+    [string]$InstallPath
 )
 
-# Check if LAUProcessVideos.exe is running
-$processName = "LAUProcessVideos"
-$process = Get-Process -Name $processName -ErrorAction SilentlyContinue
-
-if ($process) {
-    exit 0  # GREEN - process is running
-}
-
-# If TempPath not provided, try to read from config
-if ([string]::IsNullOrEmpty($TempPath)) {
-    $configPath = "C:\LAU3DVideoInspectionTools\systemConfig.ini"
+# Helper function to read config value
+function Get-ConfigValue {
+    param($configPath, $key)
     if (Test-Path $configPath) {
-        $content = Get-Content $configPath
-        foreach ($line in $content) {
-            if ($line -match '^LocalTempPath=(.+)$') {
-                $TempPath = $matches[1].Trim()
-                break
-            }
+        $line = Get-Content $configPath | Where-Object { $_ -match "^$key=" }
+        if ($line) {
+            return ($line -replace "^$key=", '').Trim()
         }
     }
+    return $null
 }
 
-# Check for noCal files
-if (-not [string]::IsNullOrEmpty($TempPath) -and (Test-Path $TempPath)) {
-    $noCalFiles = Get-ChildItem -Path $TempPath -Filter "noCal*.tif" -ErrorAction SilentlyContinue
-    if ($noCalFiles.Count -gt 0) {
-        exit 0  # GREEN - noCal files exist
+# Check if there are uncalibrated files (noCal*.tif)
+$configPath = Join-Path $InstallPath "systemConfig.ini"
+$tempPath = Get-ConfigValue $configPath "LocalTempPath"
+
+if ($tempPath -and (Test-Path $tempPath)) {
+    $noCalFiles = Get-ChildItem -Path $tempPath -Filter "noCal*.tif" -ErrorAction SilentlyContinue
+    if ($noCalFiles) {
+        Write-Host "✓ Uncalibrated files found - ready to calibrate"
+        exit 0  # SUCCESS - files need calibration
     }
 }
 
-# Check if system is fully calibrated
-# Need BOTH background.tif with valid transform AND LUTX files
-$backgroundPath = Join-Path $SharedPath "background.tif"
-$hasBackground = Test-Path $backgroundPath
+# Check if system is already calibrated (background.tif exists with valid transform)
+# Simplified check - just verify background exists
+$sharedPath = "C:\ProgramData\3DVideoInspectionTools"
+$backgroundPath = Join-Path $sharedPath "background.tif"
 
-# Note: Validating transform matrix requires reading TIFF metadata
-# For PowerShell, we'll assume if background.tif exists, it's valid
-# You may want to enhance this check with actual TIFF validation
-
-$hasLutx = $false
-if (-not [string]::IsNullOrEmpty($TempPath) -and (Test-Path $TempPath)) {
-    $lutxFiles = Get-ChildItem -Path $TempPath -Filter "*.lutx" -ErrorAction SilentlyContinue
-    $hasLutx = $lutxFiles.Count -gt 0
+if (Test-Path $backgroundPath) {
+    Write-Host "✓ System appears calibrated (background exists)"
+    exit 0  # SUCCESS - already calibrated
 }
 
-if ($hasBackground -and $hasLutx) {
-    exit 0  # GREEN - system is calibrated
-}
-
-exit 1  # RED - none of the conditions met
+Write-Host "✗ No calibration files or calibrated background found"
+exit 1  # FAIL - not ready

@@ -1,14 +1,21 @@
-# Button 4 Status Check: Record Background
-# Returns: 0 (GREEN) if background.tif exists, 1 (RED) otherwise
+# Button 4: Background Capture Test
+# Purpose: Check if background reference image exists
+# Exit Code: 0 = Ready (GREEN), 1 = Not Ready (RED)
 
 param(
-    [string]$SharedPath = "C:\Users\Public\Pictures"
+    [Parameter(Mandatory=$true)]
+    [string]$InstallPath
 )
 
-$backgroundPath = Join-Path $SharedPath "background.tif"
+# Define shared data path
+$sharedPath = "C:\ProgramData\3DVideoInspectionTools"
+$backgroundPath = Join-Path $sharedPath "background.tif"
 
+# Check if background.tif exists
 if (Test-Path $backgroundPath) {
-    exit 0  # GREEN - background file exists
+    Write-Host "✓ Background image found: $backgroundPath"
+    exit 0  # SUCCESS - background exists
 } else {
-    exit 1  # RED - background file missing
+    Write-Host "✗ Background image missing: $backgroundPath"
+    exit 1  # FAIL - no background
 }

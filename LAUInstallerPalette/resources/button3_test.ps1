@@ -1,41 +1,36 @@
-# Button 3 Status Check: Label Cameras
-# Returns: 0 (GREEN) if at least 2 camera positions are labeled in systemConfig.ini, 1 (RED) otherwise
+# Button 3: Camera Labeling Test
+# Purpose: Check if cameras are properly labeled in configuration
+# Exit Code: 0 = Ready (GREEN), 1 = Not Ready (RED)
 
 param(
-    [string]$InstallPath = "C:\LAU3DVideoInspectionTools"
+    [Parameter(Mandatory=$true)]
+    [string]$InstallPath
 )
 
+# Check if cameras are labeled in configuration
 $configPath = Join-Path $InstallPath "systemConfig.ini"
 
 if (-not (Test-Path $configPath)) {
-    exit 1  # RED - config file doesn't exist
+    Write-Host "✗ Configuration file not found: $configPath"
+    exit 1  # FAIL - no config file
 }
 
-# Read the INI file and count camera positions
-$inCameraSection = $false
-$positionCount = 0
+# Read and parse the configuration file
+$content = Get-Content $configPath -Raw
+$cameraSection = $content -match '\[CameraPosition\]([\s\S]*?)(?=\[|\z)'
 
-Get-Content $configPath | ForEach-Object {
-    $line = $_.Trim()
+if ($matches) {
+    $positions = ($matches[1] -split "`n" | Where-Object { $_ -match '=' }).Count
 
-    if ($line -eq "[CameraPosition]") {
-        $inCameraSection = $true
-        return
-    }
-
-    if ($line -match '^\[.*\]$') {
-        $inCameraSection = $false
-        return
-    }
-
-    if ($inCameraSection -and $line -match '=') {
-        $positionCount++
+    # Need at least 2 camera positions configured
+    if ($positions -ge 2) {
+        Write-Host "✓ Cameras labeled: $positions positions found"
+        exit 0  # SUCCESS - cameras labeled
+    } else {
+        Write-Host "✗ Not enough camera positions: $positions found (need 2+)"
+        exit 1  # FAIL - not enough cameras
     }
 }
 
-# Need at least 2 camera positions (for the 2 Lucid cameras)
-if ($positionCount -ge 2) {
-    exit 0  # GREEN - cameras are labeled
-} else {
-    exit 1  # RED - cameras not labeled
-}
+Write-Host "✗ No camera positions found in configuration"
+exit 1  # FAIL - no camera section

@@ -1,42 +1,56 @@
-# Button 6 Status Check: Calibrate System
-# Returns:
-#   0 (GREEN) if system is fully calibrated (background.tif AND LUTX files exist)
-#   1 (RED) if system needs calibration
+# Button 6: Video Processing Test
+# Purpose: Check if system is fully calibrated for video processing
+# Exit Code: 0 = Ready (GREEN), 1 = Not Ready (RED)
 
 param(
-    [string]$SharedPath = "C:\Users\Public\Pictures",
-    [string]$TempPath = ""
+    [Parameter(Mandatory=$true)]
+    [string]$InstallPath
 )
 
-# If TempPath not provided, try to read from config
-if ([string]::IsNullOrEmpty($TempPath)) {
-    $configPath = "C:\LAU3DVideoInspectionTools\systemConfig.ini"
+# Helper function to read config value
+function Get-ConfigValue {
+    param($configPath, $key)
     if (Test-Path $configPath) {
-        $content = Get-Content $configPath
-        foreach ($line in $content) {
-            if ($line -match '^LocalTempPath=(.+)$') {
-                $TempPath = $matches[1].Trim()
-                break
-            }
+        $line = Get-Content $configPath | Where-Object { $_ -match "^$key=" }
+        if ($line) {
+            return ($line -replace "^$key=", '').Trim()
         }
     }
+    return $null
 }
 
-# Check if background.tif exists
-# Note: Full validation would check transform matrix in TIFF metadata
-$backgroundPath = Join-Path $SharedPath "background.tif"
-$hasBackground = Test-Path $backgroundPath
+# Check if system is fully calibrated
+# Requires BOTH: background.tif with transform matrix AND .lutx lookup table files
 
-# Check if LUTX files exist
-$hasLutx = $false
-if (-not [string]::IsNullOrEmpty($TempPath) -and (Test-Path $TempPath)) {
-    $lutxFiles = Get-ChildItem -Path $TempPath -Filter "*.lutx" -ErrorAction SilentlyContinue
-    $hasLutx = $lutxFiles.Count -gt 0
+$sharedPath = "C:\ProgramData\3DVideoInspectionTools"
+$backgroundPath = Join-Path $sharedPath "background.tif"
+
+# Check background.tif exists
+if (-not (Test-Path $backgroundPath)) {
+    Write-Host "✗ Background image missing: $backgroundPath"
+    exit 1  # FAIL - no background
 }
 
-# System is calibrated if BOTH conditions are met
-if ($hasBackground -and $hasLutx) {
-    exit 0  # GREEN - fully calibrated
+# Check for LUTX lookup table files
+$configPath = Join-Path $InstallPath "systemConfig.ini"
+$tempPath = Get-ConfigValue $configPath "LocalTempPath"
+
+if (-not $tempPath) {
+    Write-Host "✗ LocalTempPath not configured"
+    exit 1  # FAIL - no temp path
+}
+
+if (-not (Test-Path $tempPath)) {
+    Write-Host "✗ Temp path does not exist: $tempPath"
+    exit 1  # FAIL - temp path missing
+}
+
+$lutxFiles = Get-ChildItem -Path $tempPath -Filter "*.lutx" -ErrorAction SilentlyContinue
+
+if ($lutxFiles) {
+    Write-Host "✓ System fully calibrated (background + $($lutxFiles.Count) LUTX files)"
+    exit 0  # SUCCESS - fully calibrated
 } else {
-    exit 1  # RED - needs calibration
+    Write-Host "✗ No LUTX lookup table files found in: $tempPath"
+    exit 1  # FAIL - missing lookup tables
 }
