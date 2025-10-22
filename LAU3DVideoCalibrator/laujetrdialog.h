@@ -110,6 +110,10 @@ public slots:
     void onJETRVectorChanged(const QVector<double> &vector);
     void onEditBoundingBox();
     void reject() override;
+    void onResetClicked();
+    void onGenerateHistoryClicked();
+    void onImportFromHistoryClicked();
+    void setDateContext(const QString &folderName);
 
 protected:
     void setupUI();
@@ -124,7 +128,15 @@ protected:
     void importMemoryObjectDirect(const QString &filename); // Direct import without user dialogs
     void importLookUpTable(const QString &filename);
     void importLUTX(const QString &filename);
-    
+
+    // History and Python script helpers
+    QStringList findExistingHistoryFiles() const;
+    QString findPythonScript() const;
+    bool runPythonScriptWithVenv(const QString &scriptPath, const QStringList &args);
+    QString createVenvWrapperScript(const QString &pythonScript, const QStringList &args);
+    QList<QVector<double>> readHistoryCSV(const QString &filename);
+    QString findSampleTiffFile(const QString &baseDir, const QString &serial);
+
     // File type detection
     enum FileType {
         FileTypeUnknown,
@@ -141,6 +153,7 @@ private:
     QPushButton *importButton;
     QPushButton *acceptButton;   // Import button
     QPushButton *rejectButton;   // Discard button
+    QPushButton *resetButton;    // Reset button
     QLabel *infoLabel;
 
     QList<LAUJETRWidget*> jetrWidgets;
@@ -149,6 +162,7 @@ private:
     QStringList currentPositions;
     QList<bool> currentRotations;
     QString tiffFilename; // TIFF filename for bounding box editing
+    QString dateFolder;   // Date folder context for calibration
     bool showLoadButton;  // Whether to show the load button
     bool importCancelled; // Whether import was cancelled by user
     LAUMemoryObject memoryObject; // Memory object for depth data operations
