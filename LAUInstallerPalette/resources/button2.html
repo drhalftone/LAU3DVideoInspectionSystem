@@ -35,23 +35,29 @@ TITLE: POWER CONTROL
 
 <!-- Customize the content below for your application -->
 
-<p>This button controls external hardware or services.</p>
+<p>Control camera power using the OnTrak USB relay controller.</p>
 
 <p><b>STATUS:</b> <span style='color:{{STATUS_COLOR}}; font-size:16px;'>{{STATUS_ICON}}</span> {{STATUS_TEXT}}</p>
 {{WARMUP_STATUS}}
 {{RELAY_WARNING}}
 
-<p><b>WHY THIS IS NEEDED:</b><br>
-External devices, services, or processes must be running before
-the system can operate properly.</p>
+<p><b>HOW IT WORKS:</b><br>
+• <b>When you click:</b> Shows Task Scheduler setup instructions<br>
+• <b>What to configure:</b> Create Windows Task Scheduler entry to launch LAUOnTrakWidget.exe at login<br>
+• <b>Status check:</b> button2_test.ps1 checks if LAUOnTrakWidget.exe process is running<br>
+• <b>Button color:</b> GREEN if process running, RED otherwise</p>
 
-<p><b>WHAT HAPPENS WHEN YOU CLICK:</b><br>
-Launches the control application or toggles the power state of external devices.</p>
+<p><b>WHY THIS IS NEEDED:</b><br>
+The OnTrak widget controls power to the cameras via USB relay. Cameras must be powered
+on before they can be detected and used. The Task Scheduler ensures OnTrak launches
+automatically at system startup.</p>
+
+<p><b>WHAT THE ONTRAK WIDGET DOES:</b><br>
+• Detects OnTrak USB relay hardware<br>
+• Controls camera power on/off via relay<br>
+• Allows cameras to warm up before recording sessions<br>
+• Runs in system tray for easy access</p>
 
 <p><b>PREREQUISITES:</b><br>
-• Button 1 GREEN: Configuration must be complete</p>
-
-<p><b>CONFIGURATION:</b><br>
-• Edit <code>button2_test.ps1</code> to check if service/hardware is active<br>
-• Edit <code>button2_action.ps1</code> to start/stop the service<br>
-• Edit this file to customize help text and descriptions</p>
+• Button 1 GREEN: systemConfig.ini must exist<br>
+• OnTrak USB relay hardware connected to the system</p>

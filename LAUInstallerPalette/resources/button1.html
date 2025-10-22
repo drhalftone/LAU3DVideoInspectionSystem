@@ -33,21 +33,28 @@ TITLE: SYSTEM CONFIGURATION
 
 <!-- Customize the content below for your application -->
 
-<p>This button configures your system settings.</p>
+<p>Configure system settings and operational parameters for the 3D video inspection system.</p>
 
 <p><b>STATUS:</b> <span style='color:{{STATUS_COLOR}}; font-size:16px;'>{{STATUS_ICON}}</span> {{STATUS_TEXT}}</p>
 
-<p><b>WHY THIS IS NEEDED:</b><br>
-Initial configuration is required before other operations can proceed.
-This sets up paths, identifiers, and operational parameters.</p>
+<p><b>HOW IT WORKS:</b><br>
+• <b>When you click:</b> Launches LAURemoteToolsScheduler.exe<br>
+• <b>What the scheduler does:</b> Collects configuration data and saves it to systemConfig.ini<br>
+• <b>Status check:</b> button1_test.ps1 looks for systemConfig.ini<br>
+• <b>Button color:</b> GREEN if systemConfig.ini exists, RED otherwise</p>
 
-<p><b>WHAT HAPPENS WHEN YOU CLICK:</b><br>
-Launches the configuration tool or dialog to set up system parameters.</p>
+<p><b>WHY THIS IS NEEDED:</b><br>
+The systemConfig.ini file contains essential settings (camera positions, storage paths,
+location identifiers, etc.) required by all other tools in the system. Without this
+configuration file, subsequent setup steps cannot proceed.</p>
+
+<p><b>WHAT TO CONFIGURE:</b><br>
+The scheduler tool will prompt you to set:<br>
+• Location identifier and installation paths<br>
+• Local temporary storage directory<br>
+• Camera position labels<br>
+• Task scheduler settings for automated recording<br>
+• Power control settings (OnTrak integration)</p>
 
 <p><b>PREREQUISITES:</b><br>
-None - this is typically the first setup step.</p>
-
-<p><b>CONFIGURATION:</b><br>
-• Edit <code>button1_test.ps1</code> to define when button is GREEN (ready)<br>
-• Edit <code>button1_action.ps1</code> to define the button's action<br>
-• Edit this file to customize help text and descriptions</p>
+None - this is the first setup step.</p>
