@@ -214,14 +214,10 @@ bool LAUJETRDialog::importLUTsDirectly()
 void LAUJETRDialog::setDisplayMode(bool displayMode)
 {
     if (displayMode) {
-        // Hide the Load and Reset buttons
+        // Hide the Load button
         if (importButton) {
             importButton->setVisible(false);
         }
-        // resetButton removed for standalone build
-        // if (resetButton) {
-        //     resetButton->setVisible(false);
-        // }
 
         // Hide Discard button in display mode (read-only, so only OK to close)
         if (rejectButton) {
@@ -248,7 +244,6 @@ void LAUJETRDialog::setDisplayMode(bool displayMode)
         if (importButton) {
             importButton->setVisible(true);
         }
-        // Reset button visibility is controlled by BUILD_STANDALONE and dateFolder
 
         // Show Discard button in edit mode
         if (rejectButton) {
@@ -344,13 +339,6 @@ void LAUJETRDialog::setupUI()
     importButton->setToolTip("Load TIFF memory object file");
     buttonBox->addButton(importButton, QDialogButtonBox::ActionRole);
 
-    // Server-only feature removed for standalone build
-    // // Add Reset button (only visible in main editor with memory object)
-    // resetButton = new QPushButton("Reset");
-    // resetButton->setToolTip("Reload calibration data from original TIFF file");
-    // resetButton->setVisible(false); // Initially hidden, shown by updateButtonVisibility() if needed
-    // buttonBox->addButton(resetButton, QDialogButtonBox::ActionRole);
-
     // Add Import button (replaces OK)
     acceptButton = new QPushButton("Import");
     acceptButton->setToolTip("Import and save the camera calibration parameters");
@@ -367,8 +355,6 @@ void LAUJETRDialog::setupUI()
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     connect(importButton, &QPushButton::clicked, this, &LAUJETRDialog::onImportClicked);
-    // Server-only feature removed for standalone build
-    // connect(resetButton, &QPushButton::clicked, this, &LAUJETRDialog::onResetClicked);
 
     mainLayout->addWidget(buttonBox);
 }
@@ -393,11 +379,6 @@ void LAUJETRDialog::updateButtonVisibility()
     if (importButton) {
         importButton->setVisible(showLoadButton);
     }
-
-    // Server-only feature removed for standalone build
-    // if (resetButton) {
-    //     resetButton->setVisible(false);
-    // }
 
     // Update info label based on whether we loaded a file
     if (infoLabel) {
@@ -433,11 +414,6 @@ void LAUJETRDialog::addJETRTab(const QVector<double> &jetrVector, const QString 
 {
     LAUJETRWidget *widget = new LAUJETRWidget(jetrVector);
 
-    // Server-only feature removed for standalone build
-    // if (!dateFolder.isEmpty()) {
-    //     QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
-    //     widget->setCurrentDate(folderDate);
-    // }
 
     // Connect to receive updates
     connect(widget, &LAUJETRWidget::jetrVectorChanged,
@@ -477,11 +453,6 @@ void LAUJETRDialog::addJETRTab(const QVector<double> &jetrVector, const QString 
     widget->setCameraMake(make);
     widget->setCameraModel(model);
 
-    // Server-only feature removed for standalone build
-    // if (!dateFolder.isEmpty()) {
-    //     QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
-    //     widget->setCurrentDate(folderDate);
-    // }
 
     // Connect to receive updates
     connect(widget, &LAUJETRWidget::jetrVectorChanged,
@@ -771,74 +742,6 @@ void LAUJETRDialog::onExportCSVClicked()
 /****************************************************************************/
 /****************************************************************************/
 /****************************************************************************/
-// Server-only feature - removed for standalone build
-#if 0
-void LAUJETRDialog::onResetClicked()
-{
-    if (!memoryObject.isValid()) {
-        QMessageBox::warning(this, "No Memory Object",
-                           "No memory object available for reset operation.");
-        return;
-    }
-
-    // Launch camera selection dialog with existing memory object
-    QList<LAUCameraInfo> cameraInfos = LAUJETRWidget::getMultiCameraMakeAndModel(memoryObject, this);
-
-    if (cameraInfos.isEmpty()) {
-        // User cancelled - keep existing data
-        return;
-    }
-
-    // Update existing tabs with new JETR vectors
-    for (int i = 0; i < cameraInfos.size() && i < jetrWidgets.size(); ++i) {
-        const LAUCameraInfo &info = cameraInfos[i];
-
-        // Get cached JETR vector for this make/model
-        LAUCameraCalibration calibration = LAUCameraInventoryDialog::getCameraCalibration(info.make, info.model);
-        QVector<double> jetrs;
-
-        if (calibration.isValid()) {
-            // Start with defaults (identity matrix, ±1000 bounds)
-            jetrs = LAUJETRWidget::createDefaultJETR();
-
-            // Copy only intrinsic parameters (0-11) and scale/depth params (34-36) from cache
-            QVector<double> cachedJetr = calibration.jetrVector;
-            if (cachedJetr.size() >= 37) {
-                // Copy intrinsic parameters (elements 0-11)
-                for (int j = 0; j <= 11; ++j) {
-                    jetrs[j] = cachedJetr[j];
-                }
-                // Copy scale/depth parameters (elements 34-36)
-                for (int j = 34; j <= 36; ++j) {
-                    jetrs[j] = cachedJetr[j];
-                }
-                // Leave transform matrix (12-27) as identity and bounding box (28-33) as ±1000
-            }
-        } else {
-            // No cached calibration - use complete defaults
-            jetrs = LAUJETRWidget::createDefaultJETR();
-        }
-
-        // Update the existing widget
-        jetrWidgets[i]->setJETRVector(jetrs, true); // updateUI = true to refresh display
-        jetrWidgets[i]->setCameraMake(info.make);
-        jetrWidgets[i]->setCameraModel(info.model);
-        jetrWidgets[i]->setCameraRotation(info.rotated);
-
-        // Ensure current date is set before setting position (which triggers LUT generation)
-        if (!dateFolder.isEmpty()) {
-            QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
-            jetrWidgets[i]->setCurrentDate(folderDate);
-        }
-
-        jetrWidgets[i]->setCameraPosition(info.position);  // This triggers LUT generation
-    }
-}
-#endif // Server-only feature
-
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
 void LAUJETRDialog::setMemoryObjectOnAllWidgets(const LAUMemoryObject &memObject)
 {
     for (int i = 0; i < tabWidget->count(); ++i) {
@@ -858,459 +761,6 @@ void LAUJETRDialog::onInventoryClicked()
     inventoryDialog->exec();
     inventoryDialog->deleteLater();
 }
-
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
-// Server-only features - removed for standalone build
-#if 0
-void LAUJETRDialog::onGenerateHistoryClicked()
-{
-    // Let user select the root directory containing system directories
-    QString rootDirectory = QFileDialog::getExistingDirectory(
-        this,
-        "Select Root Directory (containing system directories)",
-        QDir::homePath(),
-        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
-    );
-
-    if (rootDirectory.isEmpty()) {
-        return;
-    }
-
-    // Look for existing history.csv files in system subdirectories
-    QStringList existingHistoryFiles = findExistingHistoryFiles(rootDirectory);
-    
-    if (!existingHistoryFiles.isEmpty()) {
-        QString fileList = existingHistoryFiles.join("\n");
-        int result = QMessageBox::question(
-            this,
-            "Overwrite Existing History Files?",
-            QString("Found %1 existing history.csv file(s):\n\n%2\n\nDo you want to overwrite them?")
-                .arg(existingHistoryFiles.size())
-                .arg(fileList),
-            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel
-        );
-        
-        if (result != QMessageBox::Yes) {
-            return;
-        }
-    }
-
-    // Find the Python script (look in the same directory as this application)
-    QString pythonScript = findPythonScript();
-    if (pythonScript.isEmpty()) {
-        QMessageBox::warning(this, "Python Script Not Found",
-                           "Could not find lookForChangingCamerasHistory.py script.\n"
-                           "Please ensure the script is in the same directory as this application.");
-        return;
-    }
-
-    // Create and run shell/batch script with virtual environment
-    runPythonScriptWithVenv(pythonScript, rootDirectory);
-}
-
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
-QStringList LAUJETRDialog::findExistingHistoryFiles(const QString &rootDirectory)
-{
-    QStringList historyFiles;
-    QDir rootDir(rootDirectory);
-    
-    // Look for system directories (systemXXX pattern)
-    QRegularExpression systemPattern("^system\\w{3}$");
-    QStringList systemDirs = rootDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-    
-    for (const QString &systemDir : systemDirs) {
-        if (systemPattern.match(systemDir).hasMatch()) {
-            QString historyPath = rootDir.absoluteFilePath(systemDir + "/history.csv");
-            if (QFile::exists(historyPath)) {
-                historyFiles.append(historyPath);
-            }
-        }
-    }
-    
-    return historyFiles;
-}
-
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
-QString LAUJETRDialog::findPythonScript()
-{
-    // Extract Python script from Qt resources to temporary file
-    QString tempDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-    QString tempScriptPath = QDir(tempDir).absoluteFilePath("lookForChangingCamerasHistory.py");
-    
-    // Read script content from resources
-    QFile resourceFile(":/scripts/ScriptsForParsingCameraRecordings/lookForChangingCamerasHistory.py");
-    if (!resourceFile.open(QIODevice::ReadOnly)) {
-        qDebug() << "Failed to open Python script from resources";
-        return QString();
-    }
-    
-    QByteArray scriptContent = resourceFile.readAll();
-    resourceFile.close();
-    
-    // Write script to temporary file
-    QFile tempFile(tempScriptPath);
-    if (!tempFile.open(QIODevice::WriteOnly)) {
-        qDebug() << "Failed to create temporary script file:" << tempScriptPath;
-        return QString();
-    }
-    
-    tempFile.write(scriptContent);
-    tempFile.close();
-    
-    // Make script executable on Unix systems
-#ifndef Q_OS_WIN
-    QFile::setPermissions(tempScriptPath, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner);
-#endif
-    
-    return tempScriptPath;
-}
-
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
-void LAUJETRDialog::runPythonScriptWithVenv(const QString &scriptPath, const QString &rootDirectory)
-{
-    // Create temporary directory for the virtual environment
-    QString tempDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-    QString venvDir = QDir(tempDir).absoluteFilePath("jetr_history_venv");
-    
-    // Create the wrapper script
-    QString wrapperScript = createVenvWrapperScript(scriptPath, rootDirectory, venvDir);
-    if (wrapperScript.isEmpty()) {
-        QMessageBox::critical(this, "Script Creation Failed",
-                            "Could not create temporary wrapper script.");
-        return;
-    }
-
-    // Create progress dialog
-    QProgressDialog *progressDialog = new QProgressDialog(
-        "Setting up Python environment and analyzing video files...",
-        "Cancel",
-        0, 0,
-        this
-    );
-    progressDialog->setWindowModality(Qt::WindowModal);
-    progressDialog->setAutoClose(true);
-    progressDialog->setAutoReset(true);
-    progressDialog->show();
-
-    // Create process
-    QProcess *process = new QProcess(this);
-    
-    // Connect process signals
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            [this, progressDialog, process, wrapperScript, scriptPath](int exitCode, QProcess::ExitStatus exitStatus) {
-        progressDialog->close();
-        
-        // Clean up temporary files
-        QFile::remove(wrapperScript);
-        QFile::remove(scriptPath); // Remove the extracted Python script
-        
-        if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-            QMessageBox::information(this, "History Generation Complete",
-                                   "Successfully generated history.csv files.\n"
-                                   "You can now use 'Import from History...' to process the detected configuration changes.");
-        } else {
-            QString errorOutput = process->readAllStandardError();
-            QString standardOutput = process->readAllStandardOutput();
-            QMessageBox::critical(this, "History Generation Failed",
-                                QString("Script failed with exit code %1.\n\nStandard Output:\n%2\n\nError Output:\n%3")
-                                .arg(exitCode).arg(standardOutput).arg(errorOutput));
-        }
-        
-        process->deleteLater();
-        progressDialog->deleteLater();
-    });
-    
-    connect(process, &QProcess::readyReadStandardOutput, [progressDialog, process]() {
-        QString output = process->readAllStandardOutput();
-        // Update progress dialog with latest output line
-        QStringList lines = output.split('\n', Qt::SkipEmptyParts);
-        if (!lines.isEmpty()) {
-            QString lastLine = lines.last();
-            if (lastLine.contains("Creating virtual environment")) {
-                progressDialog->setLabelText("Creating Python virtual environment...");
-            } else if (lastLine.contains("Installing")) {
-                progressDialog->setLabelText("Installing Python dependencies...");
-            } else if (lastLine.contains("Analyzing")) {
-                progressDialog->setLabelText(QString("Analyzing video files...\n%1").arg(lastLine));
-            } else if (lastLine.contains("Processing")) {
-                progressDialog->setLabelText(QString("Processing systems...\n%1").arg(lastLine));
-            } else {
-                progressDialog->setLabelText(QString("Working...\n%1").arg(lastLine));
-            }
-        }
-    });
-    
-    connect(progressDialog, &QProgressDialog::canceled, [process]() {
-        process->kill();
-    });
-
-    // Determine shell command based on OS
-    QString shellCommand;
-    QStringList arguments;
-    
-#ifdef Q_OS_WIN
-    shellCommand = "cmd.exe";
-    arguments << "/c" << wrapperScript;
-#else
-    shellCommand = "/bin/bash";
-    arguments << wrapperScript;
-#endif
-    
-    // Start the wrapper script
-    process->start(shellCommand, arguments);
-    
-    if (!process->waitForStarted()) {
-        progressDialog->close();
-        progressDialog->deleteLater();
-        QFile::remove(wrapperScript);
-        QFile::remove(scriptPath); // Clean up extracted Python script
-        QMessageBox::critical(this, "Failed to Start Script",
-                            QString("Could not start wrapper script. Please ensure %1 is available.")
-                            .arg(shellCommand));
-        process->deleteLater();
-    }
-}
-
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
-QString LAUJETRDialog::createVenvWrapperScript(const QString &scriptPath, const QString &rootDirectory, const QString &venvDir)
-{
-    QString tempDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-    QString wrapperPath;
-    QString scriptContent;
-
-#ifdef Q_OS_WIN
-    // Windows batch file
-    wrapperPath = QDir(tempDir).absoluteFilePath("jetr_history_wrapper.bat");
-    scriptContent = QString(
-        "@echo off\n"
-        "echo Creating virtual environment...\n"
-        "python -m venv \"%1\"\n"
-        "if errorlevel 1 (\n"
-        "    echo Failed to create virtual environment\n"
-        "    exit /b 1\n"
-        ")\n"
-        "\n"
-        "echo Activating virtual environment...\n"
-        "call \"%1\\Scripts\\activate.bat\"\n"
-        "if errorlevel 1 (\n"
-        "    echo Failed to activate virtual environment\n"
-        "    rmdir /s /q \"%1\"\n"
-        "    exit /b 1\n"
-        ")\n"
-        "\n"
-        "echo Installing Python dependencies...\n"
-        "pip install pandas numpy tifffile\n"
-        "if errorlevel 1 (\n"
-        "    echo Failed to install dependencies\n"
-        "    call deactivate\n"
-        "    rmdir /s /q \"%1\"\n"
-        "    exit /b 1\n"
-        ")\n"
-        "\n"
-        "echo Running Python script...\n"
-        "python \"%2\" \"%3\"\n"
-        "set script_exit_code=%%errorlevel%%\n"
-        "\n"
-        "echo Cleaning up virtual environment...\n"
-        "call deactivate\n"
-        "rmdir /s /q \"%1\"\n"
-        "\n"
-        "exit /b %%script_exit_code%%\n"
-    ).arg(venvDir, scriptPath, rootDirectory);
-#else
-    // Unix shell script
-    wrapperPath = QDir(tempDir).absoluteFilePath("jetr_history_wrapper.sh");
-    scriptContent = QString(
-        "#!/bin/bash\n"
-        "set -e\n"
-        "\n"
-        "echo \"Creating virtual environment...\"\n"
-        "python3 -m venv \"%1\"\n"
-        "\n"
-        "echo \"Activating virtual environment...\"\n"
-        "source \"%1/bin/activate\"\n"
-        "\n"
-        "echo \"Installing Python dependencies...\"\n"
-        "pip install pandas numpy tifffile\n"
-        "\n"
-        "echo \"Running Python script...\"\n"
-        "python3 \"%2\" \"%3\"\n"
-        "script_exit_code=$?\n"
-        "\n"
-        "echo \"Cleaning up virtual environment...\"\n"
-        "deactivate\n"
-        "rm -rf \"%1\"\n"
-        "\n"
-        "exit $script_exit_code\n"
-    ).arg(venvDir, scriptPath, rootDirectory);
-#endif
-
-    // Write the script to file
-    QFile scriptFile(wrapperPath);
-    if (!scriptFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        return QString();
-    }
-    
-    QTextStream stream(&scriptFile);
-    stream << scriptContent;
-    scriptFile.close();
-
-    // Make script executable on Unix systems
-#ifndef Q_OS_WIN
-    QFile::setPermissions(wrapperPath, QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner);
-#endif
-
-    return wrapperPath;
-}
-
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
-void LAUJETRDialog::onImportFromHistoryClicked()
-{
-    // First, let user select a history.csv file
-    QString historyFile = QFileDialog::getOpenFileName(
-        this,
-        "Select History CSV File",
-        QDir::homePath(),
-        "CSV Files (*.csv);;All Files (*)"
-    );
-
-    if (historyFile.isEmpty()) {
-        return;
-    }
-
-    // Verify it's actually a history.csv file and read the dates
-    QStringList availableDates = readHistoryCSV(historyFile);
-    if (availableDates.isEmpty()) {
-        QMessageBox::warning(this, "Invalid History File", 
-                           "Could not read valid dates from history.csv file.");
-        return;
-    }
-
-    // Let user select a date
-    bool ok;
-    QString selectedDate = QInputDialog::getItem(
-        this,
-        "Select Configuration Date",
-        QString("Select a date when camera configuration changed\n(%1 dates available):").arg(availableDates.size()),
-        availableDates,
-        0,
-        false,
-        &ok
-    );
-
-    if (!ok || selectedDate.isEmpty()) {
-        return;
-    }
-
-    // Find and load a sample TIFF file from that date
-    QString sampleFile = findSampleTiffFile(historyFile, selectedDate);
-    if (sampleFile.isEmpty()) {
-        QMessageBox::warning(this, "No Sample File", 
-                           QString("Could not find a sample TIFF file for date %1").arg(selectedDate));
-        return;
-    }
-
-    // Load the sample file using existing import logic
-    importMemoryObject(sampleFile);
-    
-    infoLabel->setText(QString("Loaded sample from %1 (%2)").arg(selectedDate, QFileInfo(sampleFile).fileName()));
-}
-
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
-QStringList LAUJETRDialog::readHistoryCSV(const QString &historyFile)
-{
-    QStringList dates;
-    QFile file(historyFile);
-    
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        return dates;
-    }
-    
-    QTextStream stream(&file);
-    QString line = stream.readLine(); // Skip header
-    
-    while (!stream.atEnd()) {
-        line = stream.readLine();
-        QStringList columns = line.split(',');
-        
-        if (columns.size() >= 3 && !columns[0].trimmed().isEmpty()) {
-            // This is a date row (first camera for this date)
-            QString folderName = columns[0].trimmed();
-            
-            // Extract date from folder name (FolderYYYYMMDD format)
-            QRegularExpression dateRegex("^Folder(\\d{8})$");
-            QRegularExpressionMatch match = dateRegex.match(folderName);
-            
-            if (match.hasMatch()) {
-                QString dateStr = match.captured(1);
-                // Format as YYYY-MM-DD for display
-                QString formattedDate = QString("%1-%2-%3")
-                    .arg(dateStr.mid(0, 4))
-                    .arg(dateStr.mid(4, 2))
-                    .arg(dateStr.mid(6, 2));
-                
-                dates.append(QString("%1 (%2)").arg(formattedDate, folderName));
-            }
-        }
-    }
-    
-    return dates;
-}
-
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
-QString LAUJETRDialog::findSampleTiffFile(const QString &historyFile, const QString &selectedDate)
-{
-    // Extract folder name from selected date string
-    QRegularExpression folderRegex("\\((Folder\\d{8})\\)");
-    QRegularExpressionMatch match = folderRegex.match(selectedDate);
-    
-    if (!match.hasMatch()) {
-        return QString();
-    }
-    
-    QString folderName = match.captured(1);
-    
-    // Build path to the folder
-    QFileInfo historyInfo(historyFile);
-    QString systemDir = historyInfo.absolutePath();
-    QString dateDir = QDir(systemDir).absoluteFilePath(folderName);
-    
-    if (!QDir(dateDir).exists()) {
-        return QString();
-    }
-    
-    // Look for data*.tif files in the directory
-    QDir dir(dateDir);
-    QStringList filters;
-    filters << "data*.tif" << "data*.tiff";
-    dir.setNameFilters(filters);
-    dir.setSorting(QDir::Name);
-    
-    QStringList tiffFiles = dir.entryList(QDir::Files);
-    if (!tiffFiles.isEmpty()) {
-        // Return the first data file found
-        return dir.absoluteFilePath(tiffFiles.first());
-    }
-    
-    return QString();
-}
-#endif // Server-only features
 
 /****************************************************************************/
 /****************************************************************************/
@@ -1549,11 +999,6 @@ void LAUJETRDialog::importLookUpTable(const QString &filename)
     // Set read-only mode for LUT inspection (no memory object available)
     widget->setReadOnly(true);
 
-    // Server-only feature removed for standalone build
-    // if (!dateFolder.isEmpty()) {
-    //     QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
-    //     widget->setCurrentDate(folderDate);
-    // }
 
     // Connect to receive updates
     connect(widget, &LAUJETRWidget::jetrVectorChanged,
@@ -1752,32 +1197,6 @@ void LAUJETRDialog::applyBoundingBoxToAllTabs(double xMin, double xMax, double y
         }
     }
 }
-
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
-// Server-only feature - removed for standalone build
-#if 0
-void LAUJETRDialog::setDateContext(const QString &folderName)
-{
-    dateFolder = folderName;
-    setProperty("dateContext", folderName);
-
-    // Parse the folder date and set it on all JETR widgets
-    QDate folderDate = LAULookUpTable::parseFolderDate(folderName);
-
-    qDebug() << "LAUJETRDialog: Setting date context to" << folderName
-             << "parsed as" << (folderDate.isValid() ? folderDate.toString("yyyy-MM-dd") : "INVALID");
-
-    // Apply the date to all existing JETR widgets
-    for (int i = 0; i < tabWidget->count(); ++i) {
-        LAUJETRWidget* jetrWidget = qobject_cast<LAUJETRWidget*>(tabWidget->widget(i));
-        if (jetrWidget) {
-            jetrWidget->setCurrentDate(folderDate);
-        }
-    }
-}
-#endif // Server-only feature
 
 /****************************************************************************/
 /****************************************************************************/
