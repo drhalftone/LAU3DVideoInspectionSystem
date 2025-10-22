@@ -532,13 +532,13 @@ void LAUJETRDialog::setTabMetadata(const QStringList &makes, const QStringList &
         if (i < rotations.size()) {
             widget->setCameraRotation(rotations[i]);
         }
-        
-        // Ensure current date is set before setting position (which triggers LUT generation)
-        if (!dateFolder.isEmpty()) {
-            QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
-            widget->setCurrentDate(folderDate);
-        }
-        
+
+        // Server-only feature removed for standalone build
+        // if (!dateFolder.isEmpty()) {
+        //     QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
+        //     widget->setCurrentDate(folderDate);
+        // }
+
         // Set position if available (this triggers LUT generation, so date must be set first)
         if (i < positions.size()) {
             widget->setCameraPosition(positions[i]);
@@ -1628,11 +1628,11 @@ void LAUJETRDialog::importLUTX(const QString &filename)
         // Set read-only mode for LUTX inspection (no memory object available)
         widget->setReadOnly(true);
 
-        // Set current date if we have a date context
-        if (!dateFolder.isEmpty()) {
-            QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
-            widget->setCurrentDate(folderDate);
-        }
+        // Server-only feature removed for standalone build
+        // if (!dateFolder.isEmpty()) {
+        //     QDate folderDate = LAULookUpTable::parseFolderDate(dateFolder);
+        //     widget->setCurrentDate(folderDate);
+        // }
 
         // Connect to receive updates
         connect(widget, &LAUJETRWidget::jetrVectorChanged,
