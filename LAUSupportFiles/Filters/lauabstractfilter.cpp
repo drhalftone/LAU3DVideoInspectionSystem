@@ -718,75 +718,6 @@ void LAUAbstractGLFilter::setLookUpTable(LAULookUpTable lut)
                     qDebug() << "Error linking shader.";
                 }
             }
-        } else if (lookUpTable.style() == LAULookUpTableStyle::StyleActiveStereoVisionPoly) {
-            // KEEP TRACK OF THE LOOK UP TABLE'S FIRST BYTE ADDRESS
-            float *buffer = (float *)lookUpTable.constScanLine(0);
-
-            // CREATE TEXTURE FOR HOLDING A MINIMUM PHASE VALUES
-            textureMin = new QOpenGLTexture(QOpenGLTexture::Target2D);
-            textureMin->setSize(numDepthCols, numDepthRows);
-            textureMin->setFormat(QOpenGLTexture::RGBA32F);
-            textureMin->allocateStorage();
-            if (textureMin->isStorageAllocated()) {
-                textureMin->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (const void *)(buffer + 0 * numDepthCols * numDepthRows));
-            }
-
-            // CREATE TEXTURE FOR HOLDING A MINIMUM PHASE VALUES
-            textureMax = new QOpenGLTexture(QOpenGLTexture::Target2D);
-            textureMax->setSize(numDepthCols, numDepthRows);
-            textureMax->setFormat(QOpenGLTexture::RGBA32F);
-            textureMax->allocateStorage();
-            if (textureMax->isStorageAllocated()) {
-                textureMax->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (const void *)(buffer + 4 * numDepthCols * numDepthRows));
-            }
-
-            // CREATE TEXTURE FOR HOLDING SPHERICAL TO CARTESIAN COORDINATE TRANSFORMATION
-            textureAngles = new QOpenGLTexture(QOpenGLTexture::Target2D);
-            textureAngles->setSize(3 * numDepthCols, numDepthRows);
-            textureAngles->setFormat(QOpenGLTexture::RGBA32F);
-            textureAngles->setWrapMode(QOpenGLTexture::ClampToBorder);
-            textureAngles->setMinificationFilter(QOpenGLTexture::Nearest);
-            textureAngles->setMagnificationFilter(QOpenGLTexture::Nearest);
-            textureAngles->allocateStorage();
-            if (textureAngles->isStorageAllocated()) {
-                textureAngles->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (const void *)(buffer + 8 * numDepthCols * numDepthRows));
-            }
-
-            stereoProgramA.removeAllShaders();
-            if (!stereoProgramA.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/FILTERS/STEREO/Stereo/rawProsilicaASTVideoToPhase.vert")) {
-                qDebug() << "Error adding vertex shader from source.";
-            } else if (!stereoProgramA.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/FILTERS/STEREO/Stereo/rawProsilicaASTVideoToPhase.frag")) {
-                qDebug() << "Error adding fragment shader from source.";
-            } else if (!stereoProgramA.link()) {
-                qDebug() << "Error linking shader.";
-            }
-
-            stereoProgramB.removeAllShaders();
-            if (!stereoProgramB.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/FILTERS/STEREO/Stereo/rawProsilicaASTEpipolarRectifyPhase.vert")) {
-                qDebug() << "Error adding vertex shader from source.";
-            } else if (!stereoProgramB.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/FILTERS/STEREO/Stereo/rawProsilicaASTEpipolarRectifyPhase.frag")) {
-                qDebug() << "Error adding fragment shader from source.";
-            } else if (!stereoProgramB.link()) {
-                qDebug() << "Error linking shader.";
-            }
-
-            stereoProgramC.removeAllShaders();
-            if (!stereoProgramC.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/FILTERS/STEREO/Stereo/rawProsilicaASTFindCorrespondence.vert")) {
-                qDebug() << "Error adding vertex shader from source.";
-            } else if (!stereoProgramC.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/FILTERS/STEREO/Stereo/rawProsilicaASTFindCorrespondence.frag")) {
-                qDebug() << "Error adding fragment shader from source.";
-            } else if (!stereoProgramC.link()) {
-                qDebug() << "Error linking shader.";
-            }
-
-            program.removeAllShaders();
-            if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/FILTERS/STEREO/Stereo/rawProsilicaASTCorrespondenceToXYZG.vert")) {
-                qDebug() << "Error adding vertex shader from source.";
-            } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/FILTERS/STEREO/Stereo/rawProsilicaASTCorrespondenceToXYZG.frag")) {
-                qDebug() << "Error adding fragment shader from source.";
-            } else if (!program.link()) {
-                qDebug() << "Error linking shader.";
-            }
         } else if (lookUpTable.style() == LAULookUpTableStyle::StyleFourthOrderPoly) {
             // CREATE TEXTURE FOR HOLDING SPHERICAL TO CARTESIAN COORDINATE TRANSFORMATION
             textureAngles = new QOpenGLTexture(QOpenGLTexture::Target2D);
@@ -894,133 +825,6 @@ void LAUAbstractGLFilter::setLookUpTable(LAULookUpTable lut)
                     if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/XYZRGB/XYZRGB/rawLucidVideoToXYZRGBPoly.vert")) {
                         qDebug() << "Error adding vertex shader from source.";
                     } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZRGB/XYZRGB/rawLucidVideoToXYZRGBPoly.frag")) {
-                        qDebug() << "Error adding fragment shader from source.";
-                    } else if (!program.link()) {
-                        qDebug() << "Error linking shader.";
-                    }
-                }
-            }
-        } else if (lookUpTable.style() == LAULookUpTableStyle::StyleFourthOrderPolyAugmentedReality) {
-            // CREATE TEXTURE FOR HOLDING SPHERICAL TO CARTESIAN COORDINATE TRANSFORMATION
-            textureAngles = new QOpenGLTexture(QOpenGLTexture::Target2D);
-            textureAngles->setSize(4 * numDepthCols, numDepthRows);
-            textureAngles->setFormat(QOpenGLTexture::RGBA32F);
-            textureAngles->setWrapMode(QOpenGLTexture::ClampToBorder);
-            textureAngles->setMinificationFilter(QOpenGLTexture::Nearest);
-            textureAngles->setMagnificationFilter(QOpenGLTexture::Nearest);
-            textureAngles->allocateStorage();
-            textureAngles->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (const void *)lookUpTable.constScanLine(0));
-
-            // LOAD THE RIGHT PROGRAM FOR THIS PARTICULAR LUT
-            if (playbackDevice == DeviceProsilicaLCG && playbackColor == ColorXYZG) {
-                program.removeAllShaders();
-                if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/XYZG/XYZG/rawProsilicaLCGVideoToXYZGPoly.vert")) {
-                    qDebug() << "Error adding vertex shader from source.";
-                } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZG/XYZG/rawProsilicaLCGVideoToXYZGPoly.frag")) {
-                    qDebug() << "Error adding fragment shader from source.";
-                } else if (!program.link()) {
-                    qDebug() << "Error linking shader.";
-                }
-            } else if (playbackDevice == DeviceProsilicaAST && playbackColor == ColorXYZG) {
-                program.removeAllShaders();
-                if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/XYZG/XYZG/rawProsilicaASTVideoToXYZGPoly.vert")) {
-                    qDebug() << "Error adding vertex shader from source.";
-                } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZG/XYZG/rawProsilicaASTVideoToXYZGPoly.frag")) {
-                    qDebug() << "Error adding fragment shader from source.";
-                } else if (!program.link()) {
-                    qDebug() << "Error linking shader.";
-                }
-            } else if (playbackDevice == DeviceProsilicaTOF && playbackColor == ColorXYZG) {
-                program.removeAllShaders();
-                if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/XYZG/XYZG/rawProsilicaTOFVideoToXYZGPoly.vert")) {
-                    qDebug() << "Error adding vertex shader from source.";
-                } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZG/XYZG/rawProsilicaTOFVideoToXYZGPoly.frag")) {
-                    qDebug() << "Error adding fragment shader from source.";
-                } else if (!program.link()) {
-                    qDebug() << "Error linking shader.";
-                }
-            } else if (playbackDevice == DeviceProsilicaDPR && playbackColor == ColorXYZG) {
-                if (playbackColor == ColorXYZG) {
-                    program.removeAllShaders();
-                    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/XYZG/XYZG/rawProsilicaDPRVideoToXYZGPoly.vert")) {
-                        qDebug() << "Error adding vertex shader from source.";
-                    } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZG/XYZG/rawProsilicaDPRVideoToXYZGPoly.frag")) {
-                        qDebug() << "Error adding fragment shader from source.";
-                    } else if (!program.link()) {
-                        qDebug() << "Error linking shader.";
-                    }
-                } else {
-                    program.removeAllShaders();
-                    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/XYZRGB/XYZRGB/rawProsilicaDPRVideoToXYZWRGBAPoly.vert")) {
-                        qDebug() << "Error adding vertex shader from source.";
-                    } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZRGB/XYZRGB/rawProsilicaDPRVideoToXYZWRGBAPoly.frag")) {
-                        qDebug() << "Error adding fragment shader from source.";
-                    } else if (!program.link()) {
-                        qDebug() << "Error linking shader.";
-                    }
-                }
-            }
-        } else if (lookUpTable.style() == LAULookUpTableStyle::StyleFourthOrderPolyWithPhaseUnwrap) {
-            // CREATE TEXTURE FOR HOLDING SPHERICAL TO CARTESIAN COORDINATE TRANSFORMATION
-            textureAngles = new QOpenGLTexture(QOpenGLTexture::Target2D);
-            textureAngles->setSize(3 * numDepthCols, numDepthRows);
-            textureAngles->setFormat(QOpenGLTexture::RGBA32F);
-            textureAngles->setWrapMode(QOpenGLTexture::ClampToBorder);
-            textureAngles->setMinificationFilter(QOpenGLTexture::Nearest);
-            textureAngles->setMagnificationFilter(QOpenGLTexture::Nearest);
-            textureAngles->allocateStorage();
-            textureAngles->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (const void *)lookUpTable.constScanLine(0));
-
-            // CREATE TEXTURE FOR HOLDING A MINIMUM PHASE VALUES
-            texturePhaseUnwrap = new QOpenGLTexture(QOpenGLTexture::Target2D);
-            texturePhaseUnwrap->setSize(numDepthCols, numDepthRows);
-            texturePhaseUnwrap->setFormat(QOpenGLTexture::R32F);
-            texturePhaseUnwrap->allocateStorage();
-            texturePhaseUnwrap->setData(QOpenGLTexture::Red, QOpenGLTexture::Float32, (const void *)((float *)lookUpTable.constScanLine(0) + 12 * numDepthCols * numDepthRows));
-
-            // LOAD THE RIGHT PROGRAM FOR THIS PARTICULAR LUT
-            if (playbackDevice == DeviceProsilicaLCG && playbackColor == ColorXYZG) {
-                program.removeAllShaders();
-                if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/XYZG/XYZG/rawProsilicaLCGVideoToXYZGPoly.vert")) {
-                    qDebug() << "Error adding vertex shader from source.";
-                } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZG/XYZG/rawProsilicaLCGVideoToXYZGPoly.frag")) {
-                    qDebug() << "Error adding fragment shader from source.";
-                } else if (!program.link()) {
-                    qDebug() << "Error linking shader.";
-                }
-            } else if (playbackDevice == DeviceProsilicaAST && playbackColor == ColorXYZG) {
-                program.removeAllShaders();
-                if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/XYZG/XYZG/rawProsilicaASTVideoToXYZGPoly.vert")) {
-                    qDebug() << "Error adding vertex shader from source.";
-                } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZG/XYZG/rawProsilicaASTVideoToXYZGPoly.frag")) {
-                    qDebug() << "Error adding fragment shader from source.";
-                } else if (!program.link()) {
-                    qDebug() << "Error linking shader.";
-                }
-            } else if (playbackDevice == DeviceProsilicaTOF && playbackColor == ColorXYZG) {
-                program.removeAllShaders();
-                if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/XYZG/XYZG/rawProsilicaTOFVideoToXYZGPoly.vert")) {
-                    qDebug() << "Error adding vertex shader from source.";
-                } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZG/XYZG/rawProsilicaTOFVideoToXYZGPoly.frag")) {
-                    qDebug() << "Error adding fragment shader from source.";
-                } else if (!program.link()) {
-                    qDebug() << "Error linking shader.";
-                }
-            } else if (playbackDevice == DeviceProsilicaDPR && playbackColor == ColorXYZG) {
-                if (playbackColor == ColorXYZG) {
-                    program.removeAllShaders();
-                    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/XYZG/XYZG/rawProsilicaDPRVideoToXYZGPoly.vert")) {
-                        qDebug() << "Error adding vertex shader from source.";
-                    } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZG/XYZG/rawProsilicaDPRVideoToXYZGPoly.frag")) {
-                        qDebug() << "Error adding fragment shader from source.";
-                    } else if (!program.link()) {
-                        qDebug() << "Error linking shader.";
-                    }
-                } else {
-                    program.removeAllShaders();
-                    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/XYZRGB/XYZRGB/rawProsilicaDPRVideoToXYZRGBPoly.vert")) {
-                        qDebug() << "Error adding vertex shader from source.";
-                    } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZRGB/XYZRGB/rawProsilicaDPRVideoToXYZRGBPoly.frag")) {
                         qDebug() << "Error adding fragment shader from source.";
                     } else if (!program.link()) {
                         qDebug() << "Error linking shader.";
@@ -1164,68 +968,6 @@ void LAUAbstractGLFilter::setLookUpTable(LAULookUpTable lut)
                     } else if (!program.link()) {
                         qDebug() << "Error linking shader.";
                     }
-                }
-            }
-        } else if (lookUpTable.style() == LAULookUpTableStyle::StyleXYZWRCPQLookUpTable) {
-            // KEEP TRACK OF THE LOOK UP TABLE'S FIRST BYTE ADDRESS
-            float *buffer = (float *)lookUpTable.constScanLine(0);
-
-            // CREATE TEXTURE FOR HOLDING A MINIMUM PHASE VALUES
-            textureMin = new QOpenGLTexture(QOpenGLTexture::Target2D);
-            textureMin->setSize(2 * numDepthCols, numDepthRows);
-            textureMin->setFormat(QOpenGLTexture::RGBA32F);
-            textureMin->allocateStorage();
-            textureMin->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (const void *)(buffer + 0 * numDepthCols * numDepthRows));
-
-            // CREATE TEXTURE FOR HOLDING A MINIMUM PHASE VALUES
-            textureMax = new QOpenGLTexture(QOpenGLTexture::Target2D);
-            textureMax->setSize(2 * numDepthCols, numDepthRows);
-            textureMax->setFormat(QOpenGLTexture::RGBA32F);
-            textureMax->allocateStorage();
-            textureMax->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (const void *)(buffer + 8 * numDepthCols * numDepthRows));
-
-            // CREATE TEXTURE FOR HOLDING A 3D LOOK UP TABLE
-            textureLookUpTable = new QOpenGLTexture(QOpenGLTexture::Target3D);
-            textureLookUpTable->setSize(2 * numDepthCols, numDepthRows, (lookUpTable.colors() - 16) / 8);
-            textureLookUpTable->setFormat(QOpenGLTexture::RGBA32F);
-            textureLookUpTable->setWrapMode(QOpenGLTexture::ClampToBorder);
-            textureLookUpTable->setMinificationFilter(QOpenGLTexture::Linear);
-            textureLookUpTable->setMagnificationFilter(QOpenGLTexture::Linear);
-            textureLookUpTable->allocateStorage();
-            if (textureLookUpTable->isStorageAllocated()) {
-                textureLookUpTable->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (const void *)(buffer + 16 * numDepthCols * numDepthRows));
-            } else {
-                qDebug() << "Error allocating lookup table texture.";
-            }
-
-            // UPDATE THE GPU SHADERS
-            if (playbackDevice == DeviceRealSense) {
-                program.removeAllShaders();
-                if (playbackColor == ColorXYZG) {
-                    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/XYZG/XYZG/rawRealSenseVideoToXYZGLookUpTable.vert")) {
-                        qDebug() << "Error adding vertex shader from source.";
-                    } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZG/XYZG/rawRealSenseVideoToXYZGLookUpTable.frag")) {
-                        qDebug() << "Error adding fragment shader from source.";
-                    } else if (!program.link()) {
-                        qDebug() << "Error linking shader.";
-                    }
-                } else {
-                    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/XYZRGB/XYZRGB/rawRealSenseVideoToXYZRGBLookUpTable.vert")) {
-                        qDebug() << "Error adding vertex shader from source.";
-                    } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZRGB/XYZRGB/rawRealSenseVideoToXYZRGBLookUpTable.frag")) {
-                        qDebug() << "Error adding fragment shader from source.";
-                    } else if (!program.link()) {
-                        qDebug() << "Error linking shader.";
-                    }
-                }
-            } else if (playbackDevice == DeviceKinect || playbackDevice == DeviceLucid || playbackDevice == DeviceOrbbec || playbackDevice == DeviceVZense || playbackDevice == DeviceVidu) {
-                program.removeAllShaders();
-                if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/XYZRGB/XYZRGB/rawKinectVideoToXYZRGBLookUpTable.vert")) {
-                    qDebug() << "Error adding vertex shader from source.";
-                } else if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/XYZRGB/XYZRGB/rawKinectVideoToXYZRGBLookUpTable.frag")) {
-                    qDebug() << "Error adding fragment shader from source.";
-                } else if (!program.link()) {
-                    qDebug() << "Error linking shader.";
                 }
             }
         }
@@ -1468,9 +1210,7 @@ void LAUAbstractGLFilter::updateBuffer(LAUMemoryObject depth, LAUMemoryObject co
 
                         // SET THE RANGE LIMITS FOR THE Z AXIS
                         if (lookUpTable.isValid()) {
-                            if (lookUpTable.style() == LAULookUpTableStyle::StyleXYZWRCPQLookUpTable) {
-                                program.setUniformValue("qt_depthLimits", lookUpTable.pLimits());
-                            } else if (lookUpTable.style() == LAULookUpTableStyle::StyleXYZPLookUpTable) {
+                            if (lookUpTable.style() == LAULookUpTableStyle::StyleXYZPLookUpTable) {
                                 program.setUniformValue("qt_depthLimits", lookUpTable.pLimits());
                             } else {
                                 program.setUniformValue("qt_depthLimits", lookUpTable.zLimits());

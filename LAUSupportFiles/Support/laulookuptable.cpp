@@ -1082,17 +1082,8 @@ LAULookUpTable::LAULookUpTable(unsigned int cols, unsigned int rows, LAULookUpTa
         case StyleFourthOrderPoly:
             data->numChns = 12;
             break;
-        case StyleFourthOrderPolyAugmentedReality:
-            data->numChns = 16;
-            break;
-        case StyleFourthOrderPolyWithPhaseUnwrap:
-            data->numChns = 16;
-            break;
         case StyleXYZPLookUpTable:
             data->numChns = 4 * 15;
-            break;
-        case StyleXYZWRCPQLookUpTable:
-            data->numChns = 8 * 15;
             break;
         case StyleUndefined:
             data->numChns = 0;
@@ -1354,11 +1345,10 @@ bool LAULookUpTable::save(TIFF *currentTiffDirectory) const
     TIFFSetField(currentTiffDirectory, TIFFTAG_MODEL, modelString().toLocal8Bit().data());
     TIFFSetField(currentTiffDirectory, TIFFTAG_MAKE, makeString().toLocal8Bit().data());
 
-    if (style() != StyleXYZWRCPQLookUpTable) {
-        // WRITE FORMAT PARAMETERS TO CURRENT TIFF DIRECTORY
-        TIFFSetField(currentTiffDirectory, TIFFTAG_IMAGEWIDTH, (unsigned long)width());
-        TIFFSetField(currentTiffDirectory, TIFFTAG_IMAGELENGTH, (unsigned long)height());
-        TIFFSetField(currentTiffDirectory, TIFFTAG_RESOLUTIONUNIT, RESUNIT_INCH);
+    // WRITE FORMAT PARAMETERS TO CURRENT TIFF DIRECTORY
+    TIFFSetField(currentTiffDirectory, TIFFTAG_IMAGEWIDTH, (unsigned long)width());
+    TIFFSetField(currentTiffDirectory, TIFFTAG_IMAGELENGTH, (unsigned long)height());
+    TIFFSetField(currentTiffDirectory, TIFFTAG_RESOLUTIONUNIT, RESUNIT_INCH);
         TIFFSetField(currentTiffDirectory, TIFFTAG_XRESOLUTION, 72.0);
         TIFFSetField(currentTiffDirectory, TIFFTAG_YRESOLUTION, 72.0);
         TIFFSetField(currentTiffDirectory, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
@@ -1394,69 +1384,6 @@ bool LAULookUpTable::save(TIFF *currentTiffDirectory) const
         }
         free(tempBuffer);
         return (true);
-    } else {
-        unsigned int bytesPerRow = width() * sizeof(float) * 8;
-        unsigned int bytesPerFrm = height() * bytesPerRow;
-        for (unsigned int dir = 0; dir < colors() / 8; dir++) {
-            // WRITE FORMAT PARAMETERS TO CURRENT TIFF DIRECTORY
-            TIFFSetField(currentTiffDirectory, TIFFTAG_IMAGEWIDTH, (unsigned long)width());
-            TIFFSetField(currentTiffDirectory, TIFFTAG_IMAGELENGTH, (unsigned long)height());
-            TIFFSetField(currentTiffDirectory, TIFFTAG_RESOLUTIONUNIT, RESUNIT_INCH);
-            TIFFSetField(currentTiffDirectory, TIFFTAG_XRESOLUTION, 72.0);
-            TIFFSetField(currentTiffDirectory, TIFFTAG_YRESOLUTION, 72.0);
-            TIFFSetField(currentTiffDirectory, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
-            TIFFSetField(currentTiffDirectory, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
-            TIFFSetField(currentTiffDirectory, TIFFTAG_SAMPLESPERPIXEL, (unsigned short)8);
-            TIFFSetField(currentTiffDirectory, TIFFTAG_BITSPERSAMPLE, (unsigned short)(8 * sizeof(float)));
-            TIFFSetField(currentTiffDirectory, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
-#ifndef _TTY_WIN_
-            TIFFSetField(currentTiffDirectory, TIFFTAG_COMPRESSION, COMPRESSION_LZW);
-            TIFFSetField(currentTiffDirectory, TIFFTAG_PREDICTOR, 2);
-            TIFFSetField(currentTiffDirectory, TIFFTAG_ROWSPERSTRIP, 1);
-#endif
-            // SET THE EXTRA SAMPLES TAG IF THERE ARE MORE THAN 1 COLOR IN THE TABLE
-            if (colors() != 1){
-                unsigned short *smples = new unsigned short [colors()];
-                for (unsigned int n = 0; n < colors(); n++) {
-                    smples[n] = EXTRASAMPLE_UNSPECIFIED;
-                }
-                TIFFSetField(currentTiffDirectory, TIFFTAG_EXTRASAMPLES, colors() - 1, smples);
-                delete [] smples;
-            }
-
-            // SEE IF WE HAVE TO TELL THE TIFF READER THAT WE ARE STORING
-            // PIXELS IN 32-BIT FLOATING POINT FORMAT
-            TIFFSetField(currentTiffDirectory, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_IEEEFP);
-
-            // SET THE Z LIMITS AND FLIP THEIR SIGNS IF NECESSARY
-            float rMin = qMin(qAbs(data->zMin), qAbs(data->zMax));
-            float rMax = qMax(qAbs(data->zMin), qAbs(data->zMax));
-
-            // SAVE THE XYZ DEPTH RANGE
-            TIFFSetField(currentTiffDirectory, TIFFTAG_MINSAMPLEVALUE, static_cast<unsigned short>(rMin));
-            TIFFSetField(currentTiffDirectory, TIFFTAG_MAXSAMPLEVALUE, static_cast<unsigned short>(rMax));
-
-            // SAVE THE RAW DEPTH VIDEO RANGE LIMITS
-            TIFFSetField(currentTiffDirectory, TIFFTAG_SMINSAMPLEVALUE, static_cast<double>(data->pMin));
-            TIFFSetField(currentTiffDirectory, TIFFTAG_SMAXSAMPLEVALUE, static_cast<double>(data->pMax));
-
-            // MAKE TEMPORARY BUFFER TO HOLD CURRENT ROW BECAUSE COMPRESSION DESTROYS
-            // WHATS EVER INSIDE THE BUFFER
-            unsigned char *fmBuffer = constScanLine(0) + bytesPerFrm * dir;
-            unsigned char *toBuffer = (unsigned char *)malloc(step());
-            for (unsigned int row = 0; row < height(); row++) {
-                memcpy(toBuffer, fmBuffer + bytesPerRow * row, bytesPerRow);
-                TIFFWriteScanline(currentTiffDirectory, toBuffer, row, 0);
-            }
-            free(toBuffer);
-
-            // CREATE A NEW DIRECTORY IF WE NEED IT
-            TIFFSetDirectory(currentTiffDirectory, dir);
-            TIFFRewriteDirectory(currentTiffDirectory);
-        }
-        return (true);
-    }
-    return (false);
 }
 
 /****************************************************************************/
@@ -1553,32 +1480,12 @@ bool LAULookUpTable::load(TIFF *inTiff, int directory)
         } else if (uShortVariable == 12) {
             data->style = StyleFourthOrderPoly;
             data->numChns = uShortVariable;
-        } else if (uShortVariable == 16) {
-            data->style = StyleFourthOrderPolyAugmentedReality;
-            data->numChns = uShortVariable;
-        } else {
-            return (false);
-        }
-    } else if (directories == 2) {
-        if (uShortVariable == 12) {
-            data->style = StyleFourthOrderPolyWithPhaseUnwrap;
-            data->numChns = uShortVariable + 1;
-        } else {
-            return (false);
-        }
-    } else if (directories == 3) {
-        if (uShortVariable == 4) {
-            data->style = StyleActiveStereoVisionPoly;
-            data->numChns = 20;
         } else {
             return (false);
         }
     } else {
         if (uShortVariable == 4) {
             data->style = StyleXYZPLookUpTable;
-            data->numChns = uShortVariable * directories;
-        } else if (uShortVariable == 8) {
-            data->style = StyleXYZWRCPQLookUpTable;
             data->numChns = uShortVariable * directories;
         } else {
             return (false);
@@ -1661,45 +1568,11 @@ bool LAULookUpTable::load(TIFF *inTiff, int directory)
             unsigned char *buffer = scanLine(row);
             TIFFReadScanline(inTiff, buffer, static_cast<uint32_t>(row));
         }
-    } else if (directories == 2) {
-        // CALCULATE MEMORY STEP SIZES ASSUMING 12 FLOATS PER PIXEL
-        unsigned int bytesPerRow = (data->numCols * 12 * sizeof(float));
-        unsigned int bytesPerFrame = (data->numRows * bytesPerRow);
-
-        unsigned char *buffer = (unsigned char *)scanLine(0);
-        for (unsigned int row = 0; row < height(); row++) {
-            TIFFReadScanline(inTiff, (buffer + row * bytesPerRow), static_cast<uint32_t>(row));
-        }
-
-        // MOVE THE POINTER TO THE NEXT AVAILABLE ADDRESS
-        buffer += bytesPerFrame;
-
-        // AT THIS POINT, WE HAVE JUST ENOUGH ROOM FOR 1 FLOAT PER PIXEL
-        // SO LET'S GO TO THE NEXT DIRECTORY TO LOAD THIS UNWRAPPING MASK
-        LAUMemoryObject unwrapMaskObject(inTiff, 1);
-        if (unwrapMaskObject.isValid()) {
-            memcpy(buffer, unwrapMaskObject.constPointer(), unwrapMaskObject.length());
-        }
-    } else if (directories == 3) {
-        // LOAD THE THREE DIRECTORIES FROM THE TIFF FILE INTO THEIR OWN OBJECTS
-        LAUMemoryObject rsmObject(inTiff, 0);
-        LAUMemoryObject crmObject(inTiff, 1);
-        LAUMemoryObject lutObject(inTiff, 2);
-
-        // MERGE THE MEMORY OBJECTS INTO A SINGLE LOOK UP TABLE
-        memcpy(constScanLine(0), rsmObject.constPointer(), rsmObject.length());
-        memcpy(constScanLine(0) + rsmObject.length(), crmObject.constPointer(), crmObject.length());
-        memcpy(constScanLine(0) + rsmObject.length() + crmObject.length(), lutObject.constPointer(), lutObject.length());
-
-        // RESET THE DIRECTORY TO THE FIRST DIRECTORY IN THIS LOOK UP TABLE FILE
-        TIFFSetDirectory(inTiff, 0);
     } else {
         // CALCULATE MEMORY STEP SIZES
         unsigned int bytesPerRow = (data->numCols * sizeof(float));
         if (data->style == StyleXYZPLookUpTable) {
             bytesPerRow *= 4;
-        } else if (data->style == StyleXYZWRCPQLookUpTable) {
-            bytesPerRow *= 8;
         }
         unsigned int bytesPerFrame = (data->numRows * bytesPerRow);
 
@@ -2398,23 +2271,12 @@ void LAULookUpTable::updateLimits()
         __m128 maxVec = _mm_set1_ps(-1e6f);
 
         float *buffer = (float *)this->constScanLine(0);
-        if (data->style == StyleXYZWRCPQLookUpTable) {
-            for (unsigned int ind = 0; ind < 2 * width()*height(); ind++) {
-                __m128 pixVec = _mm_load_ps(&buffer[8 * ind]);
-                __m128 mskVec = _mm_cmpeq_ps(pixVec, pixVec);
-                if (_mm_test_all_ones(_mm_castps_si128(mskVec))) {
-                    minVec = _mm_min_ps(minVec, pixVec);
-                    maxVec = _mm_max_ps(maxVec, pixVec);
-                }
-            }
-        } else {
-            for (unsigned int ind = 0; ind < width()*height(); ind++) {
-                __m128 pixVec = _mm_load_ps(&buffer[4 * ind]);
-                __m128 mskVec = _mm_cmpeq_ps(pixVec, pixVec);
-                if (_mm_test_all_ones(_mm_castps_si128(mskVec))) {
-                    minVec = _mm_min_ps(minVec, pixVec);
-                    maxVec = _mm_max_ps(maxVec, pixVec);
-                }
+        for (unsigned int ind = 0; ind < width()*height(); ind++) {
+            __m128 pixVec = _mm_load_ps(&buffer[4 * ind]);
+            __m128 mskVec = _mm_cmpeq_ps(pixVec, pixVec);
+            if (_mm_test_all_ones(_mm_castps_si128(mskVec))) {
+                minVec = _mm_min_ps(minVec, pixVec);
+                maxVec = _mm_max_ps(maxVec, pixVec);
             }
         }
 

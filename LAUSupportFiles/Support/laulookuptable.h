@@ -46,7 +46,7 @@ namespace libtiff
 #include "tiffio.h"
 }
 
-enum LAULookUpTableStyle  { StyleLinear, StyleFourthOrderPoly, StyleFourthOrderPolyAugmentedReality, StyleFourthOrderPolyWithPhaseUnwrap, StyleXYZPLookUpTable, StyleXYZWRCPQLookUpTable, StyleActiveStereoVisionPoly, StyleUndefined };
+enum LAULookUpTableStyle  { StyleLinear, StyleFourthOrderPoly, StyleXYZPLookUpTable, StyleUndefined };
 
 typedef struct {
     double fx;

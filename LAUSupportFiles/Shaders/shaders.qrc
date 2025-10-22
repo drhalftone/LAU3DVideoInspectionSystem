@@ -32,26 +32,8 @@
         <file>XYZG/displayXYZGTextureAsPointCloudWithSymmetry.frag</file>
         <file>XYZG/displayXYZGTextureAsPointCloudWithSymmetry.geom</file>
         <file>XYZG/displayXYZGTextureAsPointCloudWithSymmetry.vert</file>
-        <file>XYZG/rawProsilicaLCGVideoToXYZG.frag</file>
-        <file>XYZG/rawProsilicaLCGVideoToXYZG.vert</file>
-        <file>XYZG/rawProsilicaIOSVideoToXYZG.frag</file>
-        <file>XYZG/rawProsilicaIOSVideoToXYZG.vert</file>
         <file>XYZG/rawRealSenseVideoToXYZG.frag</file>
         <file>XYZG/rawRealSenseVideoToXYZG.vert</file>
-        <file>XYZG/rawProsilicaLCGVideoToXYZGLinear.frag</file>
-        <file>XYZG/rawProsilicaLCGVideoToXYZGLookUpTable.frag</file>
-        <file>XYZG/rawProsilicaLCGVideoToXYZGPoly.frag</file>
-        <file>XYZG/rawProsilicaLCGVideoToXYZGLinear.vert</file>
-        <file>XYZG/rawProsilicaLCGVideoToXYZGLookUpTable.vert</file>
-        <file>XYZG/rawProsilicaLCGVideoToXYZGPoly.vert</file>
-        <file>XYZG/rawProsilicaDPRVideoToXYZGPoly.frag</file>
-        <file>XYZG/rawProsilicaDPRVideoToXYZGLookUpTable.frag</file>
-        <file>XYZG/rawProsilicaDPRVideoToXYZGLinear.frag</file>
-        <file>XYZG/rawProsilicaDPRVideoToXYZG.frag</file>
-        <file>XYZG/rawProsilicaDPRVideoToXYZGLookUpTable.vert</file>
-        <file>XYZG/rawProsilicaDPRVideoToXYZGLinear.vert</file>
-        <file>XYZG/rawProsilicaDPRVideoToXYZGPoly.vert</file>
-        <file>XYZG/rawProsilicaDPRVideoToXYZG.vert</file>
         <file>XYZG/rawKinectVideoToXYZGLookUpTable.vert</file>
         <file>XYZG/rawKinectVideoToXYZGLookUpTable.frag</file>
         <file>XYZG/rawRealSenseVideoToXYZGLookUpTable.vert</file>
@@ -62,26 +44,10 @@
         <file>XYZG/colorizeFilterXYZG.vert</file>
         <file>XYZG/colorizeSmoothingFilterXYZG.frag</file>
         <file>XYZG/colorizeSmoothingFilterXYZG.vert</file>
-        <file>XYZG/rawProsilicaTOFVideoToXYZG.frag</file>
-        <file>XYZG/rawProsilicaTOFVideoToXYZG.vert</file>
-        <file>XYZG/rawProsilicaTOFVideoToXYZGLinear.frag</file>
-        <file>XYZG/rawProsilicaTOFVideoToXYZGLinear.vert</file>
-        <file>XYZG/rawProsilicaTOFVideoToXYZGLookUpTable.frag</file>
-        <file>XYZG/rawProsilicaTOFVideoToXYZGLookUpTable.vert</file>
-        <file>XYZG/rawProsilicaTOFVideoToXYZGPoly.frag</file>
-        <file>XYZG/rawProsilicaTOFVideoToXYZGPoly.vert</file>
         <file>XYZG/transformFilterXYZG.vert</file>
         <file>XYZG/transformFilterXYZG.frag</file>
         <file>XYZG/insideContainerFilterXYZG.vert</file>
         <file>XYZG/insideContainerFilterXYZG.frag</file>
-        <file>XYZG/rawProsilicaASTVideoToXYZG.frag</file>
-        <file>XYZG/rawProsilicaASTVideoToXYZG.vert</file>
-        <file>XYZG/rawProsilicaASTVideoToXYZGLinear.frag</file>
-        <file>XYZG/rawProsilicaASTVideoToXYZGLinear.vert</file>
-        <file>XYZG/rawProsilicaASTVideoToXYZGLookUpTable.frag</file>
-        <file>XYZG/rawProsilicaASTVideoToXYZGLookUpTable.vert</file>
-        <file>XYZG/rawProsilicaASTVideoToXYZGPoly.frag</file>
-        <file>XYZG/rawProsilicaASTVideoToXYZGPoly.vert</file>
     </qresource>
     <qresource prefix="/XYZRGB">
         <file>XYZRGB/rawKinectVideoToXYZRGBPoly.frag</file>
@@ -94,14 +60,8 @@
         <file>XYZRGB/displayXYZRGBTextureAsPointCloudWithSymmetry.frag</file>
         <file>XYZRGB/displayXYZRGBTextureAsPointCloudWithSymmetry.geom</file>
         <file>XYZRGB/displayXYZRGBTextureAsPointCloudWithSymmetry.vert</file>
-        <file>XYZRGB/rawProsilicaLCGVideoToXYZRGB.vert</file>
-        <file>XYZRGB/rawProsilicaLCGVideoToXYZRGB.frag</file>
-        <file>XYZRGB/rawProsilicaIOSVideoToXYZRGB.frag</file>
-        <file>XYZRGB/rawProsilicaIOSVideoToXYZRGB.vert</file>
         <file>XYZRGB/rawRealSenseVideoToXYZRGB.frag</file>
         <file>XYZRGB/rawRealSenseVideoToXYZRGB.vert</file>
-        <file>XYZRGB/rawProsilicaDPRVideoToXYZRGB.frag</file>
-        <file>XYZRGB/rawProsilicaDPRVideoToXYZRGB.vert</file>
         <file>XYZRGB/rawRealSenseVideoToXYZRGBLookUpTable.frag</file>
         <file>XYZRGB/rawRealSenseVideoToXYZRGBLookUpTable.vert</file>
         <file>XYZRGB/rawKinectVideoToXYZRGBLookUpTable.vert</file>
@@ -112,8 +72,6 @@
         <file>XYZRGB/colorizeFilterXYZRGB.vert</file>
         <file>XYZRGB/colorizeSmoothingFilterXYZRGB.frag</file>
         <file>XYZRGB/colorizeSmoothingFilterXYZRGB.vert</file>
-        <file>XYZRGB/rawProsilicaASTVideoToXYZRGB.frag</file>
-        <file>XYZRGB/rawProsilicaASTVideoToXYZRGB.vert</file>
     </qresource>
     <qresource prefix="/MISC">
         <file>drawFiducials.frag</file>
@@ -149,15 +107,5 @@
         <file>ScanToGrayFilters/scanToMask.vert</file>
         <file>ScanToGrayFilters/scanToMaskMapping.frag</file>
         <file>ScanToGrayFilters/scanToMaskMapping.vert</file>
-    </qresource>
-    <qresource prefix="/FILTERS/STEREO">
-        <file>Stereo/rawProsilicaASTVideoToPhase.frag</file>
-        <file>Stereo/rawProsilicaASTVideoToPhase.vert</file>
-        <file>Stereo/rawProsilicaASTEpipolarRectifyPhase.frag</file>
-        <file>Stereo/rawProsilicaASTEpipolarRectifyPhase.vert</file>
-        <file>Stereo/rawProsilicaASTFindCorrespondence.frag</file>
-        <file>Stereo/rawProsilicaASTFindCorrespondence.vert</file>
-        <file>Stereo/rawProsilicaASTCorrespondenceToXYZG.frag</file>
-        <file>Stereo/rawProsilicaASTCorrespondenceToXYZG.vert</file>
     </qresource>
 </RCC>
